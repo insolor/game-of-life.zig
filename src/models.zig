@@ -95,7 +95,7 @@ pub const Field = struct {
         };
     }
 
-    pub fn set(self: *Self, x: isize, y: isize, value: u1) !void {
+    pub fn set(self: *Self, x: isize, y: isize, value: u1) void {
         const coords = convert_to_block_coords(x, y);
         var block: ?*BlockType = self.blocks.get(.{ coords.block_x, coords.block_y });
         if (block == null) {
@@ -104,16 +104,16 @@ pub const Field = struct {
             }
 
             block = BlockType.init(self.allocator);
-            try self.blocks.put(.{ coords.block_x, coords.block_y }, block.?);
+            self.blocks.put(.{ coords.block_x, coords.block_y }, block.?) catch unreachable;
         }
 
-        try block.?.set(coords.local_x, coords.local_y, value);
+        block.?.set(coords.local_x, coords.local_y, value) catch unreachable;
     }
 
-    pub fn get(self: Self, x: isize, y: isize) !u1 {
+    pub fn get(self: Self, x: isize, y: isize) u1 {
         const coords = convert_to_block_coords(x, y);
         const block = self.blocks.get(.{ coords.block_x, coords.block_y }) orelse return 0;
-        return try block.get(coords.local_x, coords.local_y);
+        return block.get(coords.local_x, coords.local_y) catch unreachable;
     }
 
     pub fn clear(self: *Self) void {
@@ -144,15 +144,15 @@ test "Field" {
     var field = Field.init(std.testing.allocator);
     defer field.deinit();
 
-    try field.set(0, 0, 1);
-    try std.testing.expectEqual(1, try field.get(0, 0));
+    field.set(0, 0, 1);
+    try std.testing.expectEqual(1, field.get(0, 0));
 
-    try field.set(0, 0, 0);
-    try std.testing.expectEqual(0, try field.get(0, 0));
+    field.set(0, 0, 0);
+    try std.testing.expectEqual(0, field.get(0, 0));
 
     const block: *Block(u32) = field.blocks.get(.{ 0, 0 }) orelse unreachable;
     try std.testing.expect(block.isEmpty());
 
-    try field.set(-1, -1, 1);
-    try std.testing.expectEqual(1, try field.get(-1, -1));
+    field.set(-1, -1, 1);
+    try std.testing.expectEqual(1, field.get(-1, -1));
 }
