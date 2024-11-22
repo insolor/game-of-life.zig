@@ -51,17 +51,22 @@ fn Block(comptime T: type) type {
     };
 }
 
-const Pair = Tuple(&[_]type{ usize, usize });
+const Pair = Tuple(&[_]type{ isize, isize });
 
 pub const Field = struct {
-    blocks: AutoHashMap(Pair, *Block(u32)),
+    const BLOCK_ROW_TYPE = u32;
+    const BLOCK_SIZE = @bitSizeOf(BLOCK_ROW_TYPE);
+
+    const BlockType = Block(BLOCK_ROW_TYPE);
+
+    blocks: AutoHashMap(Pair, *BlockType),
     allocator: std.mem.Allocator,
 
     const Self = @This();
 
     fn init(allocator: std.mem.Allocator) Field {
         return Field{
-            .blocks = AutoHashMap(Pair, *Block(u32)).init(allocator),
+            .blocks = AutoHashMap(Pair, *BlockType).init(allocator),
             .allocator = allocator,
         };
     }
@@ -75,37 +80,37 @@ pub const Field = struct {
     }
 
     const BlockCoords = struct {
-        block_x: usize,
-        block_y: usize,
+        block_x: isize,
+        block_y: isize,
         local_x: usize,
         local_y: usize,
     };
 
-    fn convert_to_block_coords(x: usize, y: usize) BlockCoords {
+    fn convert_to_block_coords(x: isize, y: isize) BlockCoords {
         return .{
-            .block_x = x / 32,
-            .block_y = y / 32,
-            .local_x = x % 32,
-            .local_y = y % 32,
+            .block_x = @divFloor(x, BLOCK_SIZE),
+            .block_y = @divFloor(x, BLOCK_SIZE),
+            .local_x = @intCast(@mod(x, BLOCK_SIZE)),
+            .local_y = @intCast(@mod(y, BLOCK_SIZE)),
         };
     }
 
-    pub fn set(self: *Self, x: usize, y: usize, value: u1) !void {
+    pub fn set(self: *Self, x: isize, y: isize, value: u1) !void {
         const coords = convert_to_block_coords(x, y);
-        var block: ?*Block(u32) = self.blocks.get(.{ coords.block_x, coords.block_y });
+        var block: ?*BlockType = self.blocks.get(.{ coords.block_x, coords.block_y });
         if (block == null) {
             if (value == 0) {
                 return;
             }
 
-            block = Block(u32).init(self.allocator);
+            block = BlockType.init(self.allocator);
             try self.blocks.put(.{ coords.block_x, coords.block_y }, block.?);
         }
 
         try block.?.set(coords.local_x, coords.local_y, value);
     }
 
-    pub fn get(self: Self, x: usize, y: usize) !u1 {
+    pub fn get(self: Self, x: isize, y: isize) !u1 {
         const coords = convert_to_block_coords(x, y);
         const block = self.blocks.get(.{ coords.block_x, coords.block_y }) orelse return 0;
         return try block.get(coords.local_x, coords.local_y);
@@ -147,4 +152,7 @@ test "Field" {
 
     const block: *Block(u32) = field.blocks.get(.{ 0, 0 }) orelse unreachable;
     try std.testing.expect(block.isEmpty());
+
+    try field.set(-1, -1, 1);
+    try std.testing.expectEqual(1, try field.get(-1, -1));
 }
