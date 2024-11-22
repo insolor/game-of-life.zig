@@ -5,7 +5,6 @@ const Tuple = std.meta.Tuple;
 
 const BitArray = bitarray.BitArray;
 
-
 /// A square block of cells. T should be an unsigned integer type.
 fn Block(comptime T: type) type {
     return struct {

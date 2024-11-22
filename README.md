@@ -1,5 +1,7 @@
 # Game of Life in Zig
 
+[![zig build test](https://github.com/insolor/game-of-life.zig/actions/workflows/zig-build-test.yml/badge.svg)](https://github.com/insolor/game-of-life.zig/actions/workflows/zig-build-test.yml)
+
 > [!WARNING] 
 > WORK IN PROGRESS
 
