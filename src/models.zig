@@ -5,10 +5,13 @@ const Tuple = std.meta.Tuple;
 
 const BitArray = bitarray.BitArray;
 
+
+/// A square block of cells. T should be an unsigned integer type.
 fn Block(comptime T: type) type {
     return struct {
         const BLOCK_SIZE = @bitSizeOf(T);
 
+        /// Array of rows, each row is represented as a bitarray (an unsigned integer internally)
         rows: [BLOCK_SIZE]BitArray(T) = undefined,
 
         allocator: std.mem.Allocator = undefined,
@@ -26,20 +29,24 @@ fn Block(comptime T: type) type {
             self.allocator.destroy(self);
         }
 
+        /// Clear the block
         fn clear(self: *Self) void {
             for (&self.rows) |*value| {
                 value.clear();
             }
         }
 
+        /// Set the value of a cell
         fn set(self: *Self, row: usize, col: usize, value: u1) !void {
             try self.rows[row].set(col, value);
         }
 
+        /// Get the value of a cell
         fn get(self: Self, row: usize, col: usize) !u1 {
             return try self.rows[row].get(col);
         }
 
+        /// Check if the block is empty
         fn isEmpty(self: Self) bool {
             for (self.rows) |row| {
                 if (!row.isEmpty()) {
@@ -59,7 +66,9 @@ pub const Field = struct {
 
     const BlockType = Block(BLOCK_ROW_TYPE);
 
+    /// A hasmap representing a sparse 2D array of blocks
     blocks: AutoHashMap(Pair, *BlockType),
+
     allocator: std.mem.Allocator,
 
     const Self = @This();
@@ -80,12 +89,15 @@ pub const Field = struct {
     }
 
     const BlockCoords = struct {
+        /// x and y coordinates of the block in the hashmap
         block_x: isize,
         block_y: isize,
+        /// x and ycoordinates of the cell in the block
         local_x: usize,
         local_y: usize,
     };
 
+    /// Convert global coordinates of a cell in the field to block coordinates
     fn convert_to_block_coords(x: isize, y: isize) BlockCoords {
         return .{
             .block_x = @divFloor(x, BLOCK_SIZE),
@@ -95,6 +107,7 @@ pub const Field = struct {
         };
     }
 
+    /// Set a value to a cell with the given coordinates
     pub fn set(self: *Self, x: isize, y: isize, value: u1) void {
         const coords = convert_to_block_coords(x, y);
         var block: ?*BlockType = self.blocks.get(.{ coords.block_x, coords.block_y });
@@ -110,12 +123,14 @@ pub const Field = struct {
         block.?.set(coords.local_x, coords.local_y, value) catch unreachable;
     }
 
+    /// Get the value of a cell with the given coordinates
     pub fn get(self: Self, x: isize, y: isize) u1 {
         const coords = convert_to_block_coords(x, y);
         const block = self.blocks.get(.{ coords.block_x, coords.block_y }) orelse return 0;
         return block.get(coords.local_x, coords.local_y) catch unreachable;
     }
 
+    /// Clear the field
     pub fn clear(self: *Self) void {
         for (self.blocks.valueIterator()) |block| {
             block.deinit();
