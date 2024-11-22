@@ -17,12 +17,15 @@ fn isUnsignedInt(comptime T: type) bool {
     };
 }
 
+/// At compiletime check that the given type is an unsigned integer (like u32, u64, etc.)
 fn ensureIsUnsignedInt(comptime T: type) void {
     if (!isUnsignedInt(T)) {
         @compileError("Expected an unsigned integer type, but got: " ++ @typeName(T));
     }
 }
 
+/// Bit iterator for unsigned integers. Iterates over alle the bits of an unsigned integer from least significant
+/// to most significant.
 fn BitIterator(comptime T: type) type {
     ensureIsUnsignedInt(T);
 
@@ -39,6 +42,7 @@ fn BitIterator(comptime T: type) type {
             };
         }
 
+        /// Each call returns the value of the next bit or null if there are no more bits
         fn next(self: *Self) ?u1 {
             if (self.index >= size) {
                 return null;
@@ -80,20 +84,22 @@ pub fn BitArray(comptime T: type) type {
     return struct {
         bits: T = 0,
 
-        const len: usize = @bitSizeOf(T);
+        const len = BIT_SIZE;
 
         const Self = @This();
 
+        /// Get the value of the bit at the given index (index counts from the least significant bit)
         pub fn get(self: Self, index: usize) !u1 {
-            if (index >= len) {
+            if (index >= BIT_SIZE) {
                 return error.IndexOutOfBounds;
             }
 
             return if (self.bits & BIT_MASKS[index] != 0) 1 else 0;
         }
 
+        /// Set the value of the bit at the given index (index counts from the least significant bit)
         pub fn set(self: *Self, index: usize, value: u1) !void {
-            if (index >= len) {
+            if (index >= BIT_SIZE) {
                 return error.IndexOutOfBounds;
             }
 
@@ -104,14 +110,17 @@ pub fn BitArray(comptime T: type) type {
             }
         }
 
+        /// Set all bits to 0
         pub fn clear(self: *Self) void {
             self.bits = 0;
         }
 
+        /// Check if all bits are 0
         pub fn isEmpty(self: Self) bool {
             return self.bits == 0;
         }
 
+        /// Return a bit iterator
         pub fn iter(self: Self) BitIterator(T) {
             return BitIterator(T).init(self.bits);
         }

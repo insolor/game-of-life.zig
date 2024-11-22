@@ -28,19 +28,19 @@ fn Block(comptime T: type) type {
             self.allocator.destroy(self);
         }
 
-        /// Clear the block
+        /// Set all cells in the block to 0
         fn clear(self: *Self) void {
             for (&self.rows) |*value| {
                 value.clear();
             }
         }
 
-        /// Set the value of a cell
+        /// Set the value of a cell in the block
         fn set(self: *Self, row: usize, col: usize, value: u1) !void {
             try self.rows[row].set(col, value);
         }
 
-        /// Get the value of a cell
+        /// Get the value of a cell in the block
         fn get(self: Self, row: usize, col: usize) !u1 {
             return try self.rows[row].get(col);
         }
@@ -88,11 +88,13 @@ pub const Field = struct {
     }
 
     const BlockCoords = struct {
-        /// x and y coordinates of the block in the hashmap
+        /// x coordinate of the block in the hashmap
         block_x: isize,
+        /// y coordinate of the block in the hashmap
         block_y: isize,
-        /// x and ycoordinates of the cell in the block
+        /// x coordinate of the cell in the block
         local_x: usize,
+        /// y coordinate of the cell in the block
         local_y: usize,
     };
 
