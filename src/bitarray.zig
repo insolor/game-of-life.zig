@@ -25,7 +25,7 @@ const INVERTED_MASKS: [32]u32 = blk: {
 
 fn isUnsignedInt(comptime T: type) bool {
     return switch (@typeInfo(T)) {
-        .int => |intInfo| intInfo.signedness == Signedness.unsigned,
+        .Int => |intInfo| intInfo.signedness == Signedness.unsigned,
         else => false,
     };
 }
