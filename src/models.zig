@@ -7,20 +7,38 @@ const BitArray = bitarray.BitArray;
 
 fn Block(comptime T: type) type {
     return struct {
-        const BLOCK_SIZE = @sizeOf(T);
+        const BLOCK_SIZE = @sizeOf(T) * 8;
 
         rows: [BLOCK_SIZE]BitArray(T) = blk: {
             var result: [BLOCK_SIZE]BitArray(T) = undefined;
 
-            var i: u32 = 0;
-            while (i < BLOCK_SIZE) : (i += 1) {
-                result[i] = BitArray(T){};
+            for (0..BLOCK_SIZE) |index| {
+                result[index] = BitArray(T){};
             }
 
             break :blk result;
         },
 
+        allocator: std.mem.Allocator = undefined,
+
         const Self = @This();
+
+        fn init(allocator: std.mem.Allocator) *Self {
+            var self = allocator.create(Self) catch unreachable;
+            self.allocator = allocator;
+            self.clear();
+            return self;
+        }
+
+        fn deinit(self: *Self) void {
+            self.allocator.destroy(self);
+        }
+
+        fn clear(self: *Self) void {
+            for (&self.rows) |*value| {
+                value.clear();
+            }
+        }
 
         fn set(self: *Self, row: usize, col: usize, value: u1) !void {
             try self.rows[row].set(col, value);
@@ -59,7 +77,7 @@ pub const Field = struct {
     fn deinit(self: *Field) void {
         var value_iterator = self.blocks.valueIterator();
         while (value_iterator.next()) |block| {
-            self.allocator.destroy(block.*);
+            block.*.deinit();
         }
         self.blocks.deinit();
     }
@@ -88,7 +106,7 @@ pub const Field = struct {
                 return;
             }
 
-            block = self.allocator.create(Block(u32)) catch unreachable;
+            block = Block(u32).init(self.allocator);
             try self.blocks.put(.{ coords.block_x, coords.block_y }, block.?);
         }
 

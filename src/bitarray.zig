@@ -92,6 +92,10 @@ pub fn BitArray(comptime T: type) type {
                 self.bits |= BIT_MASKS[index];
             }
         }
+        
+        pub fn clear(self: *Self) void {
+            self.bits = 0;
+        }
 
         pub fn isEmpty(self: Self) bool {
             return self.bits == 0;
