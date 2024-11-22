@@ -122,11 +122,15 @@ pub const Field = struct {
 test "Block" {
     var block = Block(u32){};
     block.clear();
-
     try std.testing.expect(block.isEmpty());
+
     try block.set(0, 0, 1);
     try std.testing.expectEqual(1, try block.get(0, 0));
     try std.testing.expect(!block.isEmpty());
+
+    try block.set(0, 0, 0);
+    try std.testing.expectEqual(0, try block.get(0, 0));
+    try std.testing.expect(block.isEmpty());
 }
 
 test "Field" {
