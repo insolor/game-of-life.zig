@@ -1,5 +1,6 @@
 const std = @import("std");
 const Signedness = std.builtin.Signedness;
+const builtin = std.builtin;
 
 const BIT_MASKS: [32]u32 = blk: {
     var result: [32]u32 = undefined;
@@ -24,8 +25,16 @@ const INVERTED_MASKS: [32]u32 = blk: {
 };
 
 fn isUnsignedInt(comptime T: type) bool {
+    // Case for zig version < 0.14.0
+    if (@hasDecl(builtin.Type, "Int")) {
+        return switch (@typeInfo(T)) {
+            .Int => |intInfo| intInfo.signedness == Signedness.unsigned,
+            else => false,
+        };
+    }
+
     return switch (@typeInfo(T)) {
-        .Int => |intInfo| intInfo.signedness == Signedness.unsigned,
+        .int => |intInfo| intInfo.signedness == Signedness.unsigned,
         else => false,
     };
 }
@@ -92,7 +101,7 @@ pub fn BitArray(comptime T: type) type {
                 self.bits |= BIT_MASKS[index];
             }
         }
-        
+
         pub fn clear(self: *Self) void {
             self.bits = 0;
         }
