@@ -61,7 +61,7 @@ pub const Field = struct {
         while (value_iterator.next()) |block| {
             self.allocator.destroy(block.*);
         }
-        self.allocator.destroy(self.blocks);
+        self.blocks.deinit();
     }
 
     const BlockCoords = struct {
