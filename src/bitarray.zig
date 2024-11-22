@@ -2,28 +2,6 @@ const std = @import("std");
 const Signedness = std.builtin.Signedness;
 const builtin = std.builtin;
 
-const BIT_MASKS: [32]u32 = blk: {
-    var result: [32]u32 = undefined;
-
-    var i: u32 = 0;
-    while (i < 32) : (i += 1) {
-        result[i] = 1 << i;
-    }
-
-    break :blk result;
-};
-
-const INVERTED_MASKS: [32]u32 = blk: {
-    var result: [32]u32 = undefined;
-
-    var i: u32 = 0;
-    while (i < 32) : (i += 1) {
-        result[i] = ~BIT_MASKS[i];
-    }
-
-    break :blk result;
-};
-
 fn isUnsignedInt(comptime T: type) bool {
     // Case for zig version < 0.14.0
     if (@hasDecl(builtin.Type, "Int")) {
@@ -76,6 +54,28 @@ fn BitIterator(comptime T: type) type {
 
 pub fn BitArray(comptime T: type) type {
     ensureIsUnsignedInt(T);
+
+    const BIT_SIZE = @bitSizeOf(T);
+
+    const BIT_MASKS: [BIT_SIZE]T = blk: {
+        var result: [BIT_SIZE]T = undefined;
+
+        for (0..BIT_SIZE) |i| {
+            result[i] = 1 << i;
+        }
+
+        break :blk result;
+    };
+
+    const INVERTED_MASKS: [BIT_SIZE]T = blk: {
+        var result: [BIT_SIZE]T = undefined;
+
+        for (0..BIT_SIZE) |i| {
+            result[i] = ~BIT_MASKS[i];
+        }
+
+        break :blk result;
+    };
 
     return struct {
         bits: T = 0,

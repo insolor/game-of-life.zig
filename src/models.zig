@@ -7,7 +7,7 @@ const BitArray = bitarray.BitArray;
 
 fn Block(comptime T: type) type {
     return struct {
-        const BLOCK_SIZE = @sizeOf(T) * 8;
+        const BLOCK_SIZE = @bitSizeOf(T);
 
         rows: [BLOCK_SIZE]BitArray(T) = undefined,
 
@@ -121,6 +121,8 @@ pub const Field = struct {
 
 test "Block" {
     var block = Block(u32){};
+    try std.testing.expectEqual(32, block.rows.len);
+
     block.clear();
     try std.testing.expect(block.isEmpty());
 
