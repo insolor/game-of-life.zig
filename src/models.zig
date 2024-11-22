@@ -9,15 +9,7 @@ fn Block(comptime T: type) type {
     return struct {
         const BLOCK_SIZE = @sizeOf(T) * 8;
 
-        rows: [BLOCK_SIZE]BitArray(T) = blk: {
-            var result: [BLOCK_SIZE]BitArray(T) = undefined;
-
-            for (0..BLOCK_SIZE) |index| {
-                result[index] = BitArray(T){};
-            }
-
-            break :blk result;
-        },
+        rows: [BLOCK_SIZE]BitArray(T) = undefined,
 
         allocator: std.mem.Allocator = undefined,
 
@@ -129,6 +121,7 @@ pub const Field = struct {
 
 test "Block" {
     var block = Block(u32){};
+    block.clear();
 
     try std.testing.expect(block.isEmpty());
     try block.set(0, 0, 1);
