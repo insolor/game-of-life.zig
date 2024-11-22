@@ -61,7 +61,7 @@ fn BitIterator(comptime T: type) type {
     };
 }
 
-fn BitArray(comptime T: type) type {
+pub fn BitArray(comptime T: type) type {
     if (!isUnsignedInt(T)) {
         @compileError("Expected an unsigned integer type, but got: " ++ @typeName(T));
     }
@@ -73,7 +73,7 @@ fn BitArray(comptime T: type) type {
 
         const Self = @This();
 
-        fn get(self: Self, index: usize) !u1 {
+        pub fn get(self: Self, index: usize) !u1 {
             if (index >= len) {
                 return error.IndexOutOfBounds;
             }
@@ -81,7 +81,7 @@ fn BitArray(comptime T: type) type {
             return if (self.bits & BIT_MASKS[index] != 0) 1 else 0;
         }
 
-        fn set(self: *Self, index: usize, value: u1) !void {
+        pub fn set(self: *Self, index: usize, value: u1) !void {
             if (index >= len) {
                 return error.IndexOutOfBounds;
             }
@@ -93,7 +93,11 @@ fn BitArray(comptime T: type) type {
             }
         }
 
-        fn iter(self: Self) BitIterator(T) {
+        pub fn isEmpty(self: Self) bool {
+            return self.bits == 0;
+        }
+
+        pub fn iter(self: Self) BitIterator(T) {
             return BitIterator(T).init(self.bits);
         }
     };
