@@ -39,10 +39,14 @@ fn isUnsignedInt(comptime T: type) bool {
     };
 }
 
-fn BitIterator(comptime T: type) type {
+fn ensureIsUnsignedInt(comptime T: type) void {
     if (!isUnsignedInt(T)) {
         @compileError("Expected an unsigned integer type, but got: " ++ @typeName(T));
     }
+}
+
+fn BitIterator(comptime T: type) type {
+    ensureIsUnsignedInt(T);
 
     return struct {
         value: T,
@@ -71,9 +75,7 @@ fn BitIterator(comptime T: type) type {
 }
 
 pub fn BitArray(comptime T: type) type {
-    if (!isUnsignedInt(T)) {
-        @compileError("Expected an unsigned integer type, but got: " ++ @typeName(T));
-    }
+    ensureIsUnsignedInt(T);
 
     return struct {
         bits: T = 0,
