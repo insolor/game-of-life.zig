@@ -63,7 +63,8 @@ fn Block(comptime T: type) type {
         pub fn debug_print(self: Self) void {
             for (0..BLOCK_SIZE) |y| {
                 for (0..BLOCK_SIZE) |x| {
-                    std.debug.print("{!} ", .{self.get(x, y)});
+                    const value = self.get(x, y) catch unreachable;
+                    std.debug.print("{s}", .{if (value == 0) "." else "#"});
                 }
                 std.debug.print("\n", .{});
             }
