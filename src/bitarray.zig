@@ -43,7 +43,7 @@ fn BitIterator(comptime T: type) type {
         }
 
         /// Each call returns the value of the next bit or null if there are no more bits
-        fn next(self: *Self) ?u1 {
+        pub fn next(self: *Self) ?u1 {
             if (self.index >= size) {
                 return null;
             }

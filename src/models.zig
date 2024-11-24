@@ -59,6 +59,15 @@ fn Block(comptime T: type) type {
             }
             return true;
         }
+
+        pub fn debug_print(self: Self) void {
+            for (0..BLOCK_SIZE) |y| {
+                for (0..BLOCK_SIZE) |x| {
+                    std.debug.print("{!} ", .{self.get(x, y)});
+                }
+                std.debug.print("\n", .{});
+            }
+        }
     };
 }
 

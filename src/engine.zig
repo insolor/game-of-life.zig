@@ -98,12 +98,12 @@ test "Calculate next field state" {
     // 011
     // 010
 
-    // FIXME: tests are failing
     // After clearing cells that are expected to be 1 the field should be empty:
-    // result.set(0, 1, 0);
-    // result.set(2, 1, 0);
-    // result.set(1, 2, 0);
-    // result.set(2, 2, 0);
-    // result.set(1, 2, 0);
-    // try std.testing.expect(result.isEmpty());
+    result.set(0, 1, 0);
+    result.set(2, 1, 0);
+    result.set(1, 2, 0);
+    result.set(2, 2, 0);
+    result.set(1, 3, 0);
+
+    try std.testing.expect(result.isEmpty());
 }
