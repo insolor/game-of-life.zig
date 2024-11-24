@@ -5,7 +5,7 @@
 > [!WARNING] 
 > WORK IN PROGRESS
 
-This is an implementation of [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) in the [Zig](https://ziglang.org/) programming language with infinite field.
+This is an implementation of [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) in [Zig](https://ziglang.org/) programming language with infinite field.
 
 The field is represented as a sparse 2D array of blocks.
 
@@ -20,3 +20,5 @@ Plans:
 - Optimizations:
   - Parallelization?
   - Reuse memory instead of destroying and creating of fields?
+- Some cool stuff:
+  - Fish-eye view?
