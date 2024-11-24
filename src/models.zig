@@ -117,7 +117,7 @@ pub const Field = struct {
     fn convert_to_block_coords(x: isize, y: isize) BlockCoords {
         return .{
             .block_x = @divFloor(x, BLOCK_SIZE),
-            .block_y = @divFloor(x, BLOCK_SIZE),
+            .block_y = @divFloor(y, BLOCK_SIZE),
             .local_x = @intCast(@mod(x, BLOCK_SIZE)),
             .local_y = @intCast(@mod(y, BLOCK_SIZE)),
         };
@@ -198,6 +198,26 @@ test "Block" {
     try block.set(0, 0, 0);
     try std.testing.expectEqual(0, try block.get(0, 0));
     try std.testing.expect(block.isEmpty());
+}
+
+test "convert_to_block_coords" {
+    const coords = Field.convert_to_block_coords(0, 0);
+    try std.testing.expectEqual(0, coords.block_x);
+    try std.testing.expectEqual(0, coords.block_y);
+    try std.testing.expectEqual(0, coords.local_x);
+    try std.testing.expectEqual(0, coords.local_y);
+
+    const coords1 = Field.convert_to_block_coords(0, -1);
+    try std.testing.expectEqual(0, coords1.block_x);
+    try std.testing.expectEqual(-1, coords1.block_y);
+    try std.testing.expectEqual(0, coords1.local_x);
+    try std.testing.expectEqual(31, coords1.local_y);
+
+    const coords2 = Field.convert_to_block_coords(-1, 0);
+    try std.testing.expectEqual(-1, coords2.block_x);
+    try std.testing.expectEqual(0, coords2.block_y);
+    try std.testing.expectEqual(31, coords2.local_x);
+    try std.testing.expectEqual(0, coords2.local_y);
 }
 
 test "Field" {

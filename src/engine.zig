@@ -74,7 +74,7 @@ test "Calculate next cell state" {
     try std.testing.expectEqual(1, calculate_cell_next_state(field, 1, 0));
 }
 
-test "Calculate next field state" {
+test "Calculate next field state (glider)" {
     var field = Field.init(std.testing.allocator);
     defer field.deinit();
 
@@ -105,5 +105,34 @@ test "Calculate next field state" {
     result.set(2, 2, 0);
     result.set(1, 3, 0);
 
+    try std.testing.expect(result.isEmpty());
+}
+
+test "Calculate next field state (blinker)" {
+    var field = Field.init(std.testing.allocator);
+    defer field.deinit();
+
+    // Initial state:
+    // 111
+
+    field.setOn(0, 0);
+    field.setOn(1, 0);
+    field.setOn(2, 0);
+
+    var result = calculate_field_next_state(field);
+    defer result.deinit();
+    try std.testing.expect(!result.isEmpty());
+
+    // Expected state:
+    // 010 - a block higher of the original one
+    // ---
+    // 010
+    // 010
+
+    try std.testing.expectEqual(2, result.blocks.count());
+
+    result.set(1, -1, 0);
+    result.set(1, 0, 0);
+    result.set(1, 1, 0);
     try std.testing.expect(result.isEmpty());
 }
