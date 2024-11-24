@@ -62,7 +62,7 @@ fn Block(comptime T: type) type {
     };
 }
 
-const Pair = Tuple(&[_]type{ isize, isize });
+pub const Pair = Tuple(&[_]type{ isize, isize });
 
 pub const Field = struct {
     const BLOCK_ROW_TYPE = u32;
@@ -156,8 +156,20 @@ pub const Field = struct {
         self.blocks.clearRetainingCapacity();
     }
 
+    /// Check if the field is empty
+    pub fn isEmpty(self: Self) bool {
+        var block_iterator = self.blocks.valueIterator();
+        while (block_iterator.next()) |block| {
+            if (!block.*.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /// Get the size of a block
-    inline fn get_block_size() usize {
+    pub inline fn get_block_size(self: Self) usize {
+        _ = self;
         return BLOCK_SIZE;
     }
 };
