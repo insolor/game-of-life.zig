@@ -110,6 +110,15 @@ pub fn BitArray(comptime T: type) type {
             }
         }
 
+        /// Set the value of the bit at the given index to 1
+        pub fn setOn(self: *Self, index: usize) !void {
+            if (index >= BIT_SIZE) {
+                return error.IndexOutOfBounds;
+            }
+
+            self.bits |= BIT_MASKS[index];
+        }
+
         /// Set all bits to 0
         pub fn clear(self: *Self) void {
             self.bits = 0;

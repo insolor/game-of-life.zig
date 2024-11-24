@@ -40,6 +40,11 @@ fn Block(comptime T: type) type {
             try self.rows[row].set(col, value);
         }
 
+        /// Set the cell's value to 1
+        fn setOn(self: *Self, row: usize, col: usize) !void {
+            try self.rows[row].setOn(col);
+        }
+
         /// Get the value of a cell in the block
         fn get(self: Self, row: usize, col: usize) !u1 {
             return try self.rows[row].get(col);
@@ -72,14 +77,14 @@ pub const Field = struct {
 
     const Self = @This();
 
-    fn init(allocator: std.mem.Allocator) Field {
+    pub fn init(allocator: std.mem.Allocator) Field {
         return Field{
             .blocks = AutoHashMap(Pair, *BlockType).init(allocator),
             .allocator = allocator,
         };
     }
 
-    fn deinit(self: *Field) void {
+    pub fn deinit(self: *Field) void {
         var value_iterator = self.blocks.valueIterator();
         while (value_iterator.next()) |block| {
             block.*.deinit();
@@ -124,6 +129,18 @@ pub const Field = struct {
         block.?.set(coords.local_x, coords.local_y, value) catch unreachable;
     }
 
+    /// Set the cell's value to 1
+    pub fn setOn(self: *Self, x: isize, y: isize) void {
+        const coords = convert_to_block_coords(x, y);
+        var block: ?*BlockType = self.blocks.get(.{ coords.block_x, coords.block_y });
+        if (block == null) {
+            block = BlockType.init(self.allocator);
+            self.blocks.put(.{ coords.block_x, coords.block_y }, block.?) catch unreachable;
+        }
+
+        block.?.setOn(coords.local_x, coords.local_y) catch unreachable;
+    }
+
     /// Get the value of a cell with the given coordinates
     pub fn get(self: Self, x: isize, y: isize) u1 {
         const coords = convert_to_block_coords(x, y);
@@ -137,6 +154,11 @@ pub const Field = struct {
             block.deinit();
         }
         self.blocks.clearRetainingCapacity();
+    }
+
+    /// Get the size of a block
+    inline fn get_block_size() usize {
+        return BLOCK_SIZE;
     }
 };
 
