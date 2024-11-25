@@ -1,7 +1,10 @@
 const std = @import("std");
 const bitarray = @import("bitarray.zig");
+const testing_utils = @import("testing_utils.zig");
+const testing = std.testing;
 const AutoHashMap = std.AutoHashMap;
 const Tuple = std.meta.Tuple;
+const expectEqualStructs = testing_utils.expectEqualStructs;
 
 const BitArray = bitarray.BitArray;
 
@@ -186,53 +189,55 @@ pub const Field = struct {
 
 test "Block" {
     var block = Block(u32){};
-    try std.testing.expectEqual(32, block.rows.len);
+    try testing.expectEqual(32, block.rows.len);
 
     block.clear();
-    try std.testing.expect(block.isEmpty());
+    try testing.expect(block.isEmpty());
 
     try block.set(0, 0, 1);
-    try std.testing.expectEqual(1, try block.get(0, 0));
-    try std.testing.expect(!block.isEmpty());
+    try testing.expectEqual(1, try block.get(0, 0));
+    try testing.expect(!block.isEmpty());
 
     try block.set(0, 0, 0);
-    try std.testing.expectEqual(0, try block.get(0, 0));
-    try std.testing.expect(block.isEmpty());
+    try testing.expectEqual(0, try block.get(0, 0));
+    try testing.expect(block.isEmpty());
 }
 
 test "convert_to_block_coords" {
-    const coords = Field.convert_to_block_coords(0, 0);
-    try std.testing.expectEqual(0, coords.block_x);
-    try std.testing.expectEqual(0, coords.block_y);
-    try std.testing.expectEqual(0, coords.local_x);
-    try std.testing.expectEqual(0, coords.local_y);
+    try expectEqualStructs(
+        .{ .block_x = 0, .block_y = 0, .local_x = 0, .local_y = 0 },
+        Field.convert_to_block_coords(0, 0),
+    );
 
-    const coords1 = Field.convert_to_block_coords(0, -1);
-    try std.testing.expectEqual(0, coords1.block_x);
-    try std.testing.expectEqual(-1, coords1.block_y);
-    try std.testing.expectEqual(0, coords1.local_x);
-    try std.testing.expectEqual(31, coords1.local_y);
+    try expectEqualStructs(
+        .{ .block_x = 0, .block_y = -1, .local_x = 0, .local_y = 31 },
+        Field.convert_to_block_coords(0, -1),
+    );
 
-    const coords2 = Field.convert_to_block_coords(-1, 0);
-    try std.testing.expectEqual(-1, coords2.block_x);
-    try std.testing.expectEqual(0, coords2.block_y);
-    try std.testing.expectEqual(31, coords2.local_x);
-    try std.testing.expectEqual(0, coords2.local_y);
+    try expectEqualStructs(
+        .{ .block_x = -1, .block_y = 0, .local_x = 31, .local_y = 0 },
+        Field.convert_to_block_coords(-1, 0),
+    );
+
+    try expectEqualStructs(
+        .{ .block_x = -1, .block_y = -1, .local_x = 31, .local_y = 31 },
+        Field.convert_to_block_coords(-1, -1),
+    );
 }
 
 test "Field" {
-    var field = Field.init(std.testing.allocator);
+    var field = Field.init(testing.allocator);
     defer field.deinit();
 
     field.set(0, 0, 1);
-    try std.testing.expectEqual(1, field.get(0, 0));
+    try testing.expectEqual(1, field.get(0, 0));
 
     field.set(0, 0, 0);
-    try std.testing.expectEqual(0, field.get(0, 0));
+    try testing.expectEqual(0, field.get(0, 0));
 
     const block: *Block(u32) = field.blocks.get(.{ 0, 0 }) orelse unreachable;
-    try std.testing.expect(block.isEmpty());
+    try testing.expect(block.isEmpty());
 
     field.set(-1, -1, 1);
-    try std.testing.expectEqual(1, field.get(-1, -1));
+    try testing.expectEqual(1, field.get(-1, -1));
 }

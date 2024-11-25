@@ -1,4 +1,5 @@
 const std = @import("std");
+const testing = std.testing;
 const models = @import("models.zig");
 
 const AutoHashMap = std.AutoHashMap;
@@ -60,23 +61,23 @@ fn calculate_field_next_state(field: Field) Field {
 }
 
 test "Calculate next cell state" {
-    var field = Field.init(std.testing.allocator);
+    var field = Field.init(testing.allocator);
     defer field.deinit();
 
     field.setOn(0, 0);
-    try std.testing.expectEqual(0, calculate_cell_next_state(field, 0, 0));
+    try testing.expectEqual(0, calculate_cell_next_state(field, 0, 0));
 
     // 10
     // 11
 
     field.setOn(0, 1);
     field.setOn(1, 1);
-    try std.testing.expectEqual(1, calculate_cell_next_state(field, 0, 0));
-    try std.testing.expectEqual(1, calculate_cell_next_state(field, 1, 0));
+    try testing.expectEqual(1, calculate_cell_next_state(field, 0, 0));
+    try testing.expectEqual(1, calculate_cell_next_state(field, 1, 0));
 }
 
 test "Calculate next field state (glider)" {
-    var field = Field.init(std.testing.allocator);
+    var field = Field.init(testing.allocator);
     defer field.deinit();
 
     // Initial state of the field ("glider"):
@@ -92,7 +93,7 @@ test "Calculate next field state (glider)" {
 
     var result = calculate_field_next_state(field);
     defer result.deinit();
-    try std.testing.expect(!result.isEmpty());
+    try testing.expect(!result.isEmpty());
     // Expected state here:
     // 000
     // 101
@@ -106,11 +107,11 @@ test "Calculate next field state (glider)" {
     result.set(2, 2, 0);
     result.set(1, 3, 0);
 
-    try std.testing.expect(result.isEmpty());
+    try testing.expect(result.isEmpty());
 }
 
 test "Calculate next field state (blinker)" {
-    var field = Field.init(std.testing.allocator);
+    var field = Field.init(testing.allocator);
     defer field.deinit();
 
     // Initial state:
@@ -122,7 +123,7 @@ test "Calculate next field state (blinker)" {
 
     var result = calculate_field_next_state(field);
     defer result.deinit();
-    try std.testing.expect(!result.isEmpty());
+    try testing.expect(!result.isEmpty());
 
     // Expected state:
     // 010 - a block higher of the original one
@@ -130,10 +131,10 @@ test "Calculate next field state (blinker)" {
     // 010
     // 010
 
-    try std.testing.expectEqual(2, result.blocks.count());
+    try testing.expectEqual(2, result.blocks.count());
 
     result.set(1, -1, 0);
     result.set(1, 0, 0);
     result.set(1, 1, 0);
-    try std.testing.expect(result.isEmpty());
+    try testing.expect(result.isEmpty());
 }

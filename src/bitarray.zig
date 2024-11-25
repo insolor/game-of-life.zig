@@ -1,4 +1,5 @@
 const std = @import("std");
+const testing = std.testing;
 const Signedness = std.builtin.Signedness;
 const builtin = std.builtin;
 
@@ -141,18 +142,18 @@ const BitArray64 = BitArray(u64);
 
 test "BitArray" {
     var bitarray = BitArray32{};
-    try std.testing.expectEqual(0, bitarray.bits);
+    try testing.expectEqual(0, bitarray.bits);
 
     try bitarray.set(0, 1);
-    try std.testing.expectEqual(1, try bitarray.get(0));
+    try testing.expectEqual(1, try bitarray.get(0));
 
     try bitarray.set(31, 1);
-    try std.testing.expectEqual(1, try bitarray.get(31));
-    try std.testing.expectEqual(0b10000000000000000000000000000001, bitarray.bits);
+    try testing.expectEqual(1, try bitarray.get(31));
+    try testing.expectEqual(0b10000000000000000000000000000001, bitarray.bits);
 
     try bitarray.set(0, 0);
-    try std.testing.expectEqual(0, try bitarray.get(0));
-    try std.testing.expectEqual(0b10000000000000000000000000000000, bitarray.bits);
+    try testing.expectEqual(0, try bitarray.get(0));
+    try testing.expectEqual(0b10000000000000000000000000000000, bitarray.bits);
 }
 
 test "BitIterator" {
@@ -160,13 +161,13 @@ test "BitIterator" {
     var iterator = bitarray.iter();
 
     for (0..BitArray32.len) |index| {
-        try std.testing.expectEqual(try bitarray.get(index), iterator.next());
+        try testing.expectEqual(try bitarray.get(index), iterator.next());
     }
 
     var index: usize = 0;
     var iterator2 = bitarray.iter();
     while (iterator2.next()) |value| {
-        try std.testing.expectEqual(try bitarray.get(index), value);
+        try testing.expectEqual(try bitarray.get(index), value);
         index += 1;
     }
 }
