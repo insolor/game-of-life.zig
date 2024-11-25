@@ -35,8 +35,9 @@ fn calculate_field_next_state(field: Field) Field {
     var block_coords_iterator = field.blocks.keyIterator();
 
     while (block_coords_iterator.next()) |block_coords| {
-        const field_x = block_coords[0] * field.get_block_size();
-        const field_y = block_coords[1] * field.get_block_size();
+        const block_x, const block_y = block_coords.*;
+        const field_x = block_x * field.get_block_size();
+        const field_y = block_y * field.get_block_size();
 
         var x = field_x - 1;
         while (x <= field_x + field.get_block_size() + 1) : (x += 1) {
