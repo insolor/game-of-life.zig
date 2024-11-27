@@ -41,7 +41,7 @@ fn displayBlock(block: *const Block(u32), params: DisplayParams, screen_x: i32, 
         }
 
         const cell_screen_y: i32 = screen_y + y * params.scale;
-        if (!(cell_screen_y + params.scale >= 0 or cell_screen_y < params.height)) {
+        if (!(cell_screen_y + params.scale >= 0 and cell_screen_y < params.height)) {
             continue;
         }
 
@@ -53,7 +53,7 @@ fn displayBlock(block: *const Block(u32), params: DisplayParams, screen_x: i32, 
             }
 
             const cell_screen_x: i32 = screen_x + x * params.scale;
-            if (!(cell_screen_x + params.scale >= 0 or cell_screen_x < params.width)) {
+            if (!(cell_screen_x + params.scale >= 0 and cell_screen_x < params.width)) {
                 continue;
             }
 
