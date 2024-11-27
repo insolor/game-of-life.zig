@@ -28,10 +28,12 @@ pub fn main() anyerror!void {
     rl.initWindow(screenWidth, screenHeight, "Game of Life");
     defer rl.closeWindow();
 
+    rl.setExitKey(rl.KeyboardKey.key_null); // Don't exit on Esc key press
+
     rl.setTargetFPS(60);
 
     var frame_count: u32 = 0;
-    while (!rl.windowShouldClose()) : (frame_count += 1) { // Detect window close button or ESC key
+    while (!rl.windowShouldClose()) : (frame_count += 1) {
         // Draw
         rl.beginDrawing();
         defer rl.endDrawing();
