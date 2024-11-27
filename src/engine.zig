@@ -27,7 +27,7 @@ fn calculate_cell_next_state(self: Field, x: isize, y: isize) u1 {
     }
 }
 
-fn calculate_field_next_state(field: Field) Field {
+pub fn calculate_field_next_state(field: Field) Field {
     var result = Field.init(field.allocator);
 
     var calculated_cells = AutoHashMap(Pair, void).init(field.allocator);
