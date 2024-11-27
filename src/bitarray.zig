@@ -131,7 +131,7 @@ pub fn BitArray(comptime T: type) type {
         }
 
         /// Return a bit iterator
-        pub fn iter(self: Self) BitIterator(T) {
+        pub fn iterator(self: Self) BitIterator(T) {
             return BitIterator(T).init(self.bits);
         }
     };
@@ -158,14 +158,14 @@ test "BitArray" {
 
 test "BitIterator" {
     var bitarray = BitArray32{ .bits = 0b101 };
-    var iterator = bitarray.iter();
+    var iterator = bitarray.iterator();
 
     for (0..BitArray32.len) |index| {
         try testing.expectEqual(try bitarray.get(index), iterator.next());
     }
 
     var index: usize = 0;
-    var iterator2 = bitarray.iter();
+    var iterator2 = bitarray.iterator();
     while (iterator2.next()) |value| {
         try testing.expectEqual(try bitarray.get(index), value);
         index += 1;
