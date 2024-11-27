@@ -77,7 +77,7 @@ fn displayBlock(block: *const Block(u32), params: DisplayParams, screen_x: i32, 
 }
 
 pub fn displayField(field: Field, params: DisplayParams) void {
-    const block_pixel_size: u32 = @as(u32, Field.get_block_size()) * params.scale;
+    const block_pixel_size: u16 = @as(u16, Field.get_block_size()) * params.scale;
 
     var block_iterator = field.blocks.iterator();
     while (block_iterator.next()) |entry| {
@@ -85,12 +85,12 @@ pub fn displayField(field: Field, params: DisplayParams) void {
         const block_x, const block_y = coords.*;
         const block = entry.value_ptr;
 
-        const block_screen_x = (block_x * block_pixel_size) + params.pixel_offset_x;
+        const block_screen_x = (block_x * @as(i32, block_pixel_size)) + params.pixel_offset_x;
         if ((block_screen_x + block_pixel_size) < 0 or block_screen_x > params.width) {
             continue;
         }
 
-        const block_screen_y = (block_y * block_pixel_size) + params.pixel_offset_y;
+        const block_screen_y = (block_y * @as(i32, block_pixel_size)) + params.pixel_offset_y;
         if ((block_screen_y + block_pixel_size) < 0 or block_screen_y > params.width) {
             continue;
         }

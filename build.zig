@@ -24,6 +24,11 @@ pub fn build(b: *std.Build) void {
     exe.root_module.addImport("raylib", raylib);
     exe.root_module.addImport("raygui", raygui);
 
+    // Allow exported symbols to actually be exported.
+    exe.rdynamic = true;
+    // Avoid issue with the linker trying to find an entry point for the executable.
+    exe.entry = .disabled;
+
     b.installArtifact(exe);
 
     const run_cmd = b.addRunArtifact(exe);
