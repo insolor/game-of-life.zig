@@ -9,7 +9,7 @@ const expectEqualStructs = testing_utils.expectEqualStructs;
 const BitArray = bitarray.BitArray;
 
 /// A square block of cells. T should be an unsigned integer type.
-fn Block(comptime T: type) type {
+pub fn Block(comptime T: type) type {
     return struct {
         const BLOCK_SIZE = @bitSizeOf(T);
 
@@ -181,8 +181,7 @@ pub const Field = struct {
     }
 
     /// Get the size of a block
-    pub inline fn get_block_size(self: Self) usize {
-        _ = self;
+    pub inline fn get_block_size() u8 {
         return BLOCK_SIZE;
     }
 };

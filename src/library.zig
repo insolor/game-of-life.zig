@@ -15,14 +15,16 @@ pub const SPACESHIP =
     \\ ####
 ;
 
-pub fn putObject(field: Field, obj: []const u8, x: isize, y: isize) void {
+pub fn putObject(field: *Field, obj: []const u8, x: isize, y: isize) void {
     var row_iterator = std.mem.split(u8, obj, "\n");
-    var i: usize = 0;
+    var i: isize = 0;
     while (row_iterator.next()) |row| : (i += 1) {
-        for (row, 0..) |char, j| {
+        var j: isize = 0;
+        for (row) |char|{
             if (char != ' ') {
-                field.setOn(x + j, y + i);
+                field.setOn(x + @as(isize, j), y + i);
             }
+            j += 1;
         }
     }
 }

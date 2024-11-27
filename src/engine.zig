@@ -37,13 +37,13 @@ fn calculate_field_next_state(field: Field) Field {
 
     while (block_coords_iterator.next()) |block_coords| {
         const block_x, const block_y = block_coords.*;
-        const field_x = block_x * field.get_block_size();
-        const field_y = block_y * field.get_block_size();
+        const field_x = block_x * Field.get_block_size();
+        const field_y = block_y * Field.get_block_size();
 
         var x = field_x - 1;
-        while (x <= field_x + field.get_block_size() + 1) : (x += 1) {
+        while (x <= field_x + Field.get_block_size() + 1) : (x += 1) {
             var y = field_y - 1;
-            while (y <= field_y + field.get_block_size() + 1) : (y += 1) {
+            while (y <= field_y + Field.get_block_size() + 1) : (y += 1) {
                 if (calculated_cells.contains(.{ x, y })) {
                     continue;
                 }
