@@ -32,7 +32,7 @@ pub const DisplayParams = struct {
 };
 
 fn displayBlock(block: Block(Field.get_block_size()), params: DisplayParams, screen_x: usize, screen_y: usize) void {
-    for (0..block.get_block_size(), block.rows) |y, row| {
+    for (block.rows, 0..) |row, y| {
         if (row.isEmpty()) {
             continue;
         }
