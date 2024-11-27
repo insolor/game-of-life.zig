@@ -15,7 +15,7 @@ Plans:
 
 - [x] Infinite field
 - [x] Engine (calculate next field state)
-- [ ] GUI
+- [x] GUI (raylib)
 - [ ] Mouse and keyboard control
 - Optimizations:
   - Parallelization?
