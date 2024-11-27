@@ -77,7 +77,7 @@ fn displayBlock(block: *const Block(u32), params: DisplayParams, screen_x: i32, 
 }
 
 pub fn displayField(field: Field, params: DisplayParams) void {
-    const block_pixel_size: u32 = Field.get_block_size() *% params.scale;
+    const block_pixel_size: u32 = @as(u32, Field.get_block_size()) * params.scale;
 
     var block_iterator = field.blocks.iterator();
     while (block_iterator.next()) |entry| {
