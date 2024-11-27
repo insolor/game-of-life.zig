@@ -39,18 +39,18 @@ pub fn Block(comptime T: type) type {
         }
 
         /// Set the value of a cell in the block
-        fn set(self: *Self, row: usize, col: usize, value: u1) !void {
-            try self.rows[row].set(col, value);
+        fn set(self: *Self, x: usize, y: usize, value: u1) !void {
+            try self.rows[y].set(x, value);
         }
 
         /// Set the cell's value to 1
-        fn setOn(self: *Self, row: usize, col: usize) !void {
-            try self.rows[row].setOn(col);
+        fn setOn(self: *Self, x: usize, y: usize) !void {
+            try self.rows[y].setOn(x);
         }
 
         /// Get the value of a cell in the block
-        fn get(self: Self, row: usize, col: usize) !u1 {
-            return try self.rows[row].get(col);
+        fn get(self: Self, x: usize, y: usize) !u1 {
+            return try self.rows[y].get(x);
         }
 
         /// Check if the block is empty
