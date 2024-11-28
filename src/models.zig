@@ -3,7 +3,6 @@ const bitarray = @import("bitarray.zig");
 const testing_utils = @import("testing_utils.zig");
 const testing = std.testing;
 const AutoHashMap = std.AutoHashMap;
-const Tuple = std.meta.Tuple;
 const expectEqualStructs = testing_utils.expectEqualStructs;
 
 const BitArray = bitarray.BitArray;
@@ -75,7 +74,7 @@ pub fn Block(comptime T: type) type {
     };
 }
 
-pub const Pair = Tuple(&[_]type{ isize, isize });
+pub const Pair = struct { isize, isize };
 
 pub const Field = struct {
     const BLOCK_ROW_TYPE = u32;
