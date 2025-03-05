@@ -16,7 +16,7 @@ pub const SPACESHIP =
 ;
 
 pub fn putObject(field: *Field, obj: []const u8, x: isize, y: isize) void {
-    var row_iterator = std.mem.split(u8, obj, "\n");
+    var row_iterator = std.mem.splitSequence(u8, obj, "\n");
     var i: isize = 0;
     while (row_iterator.next()) |row| : (i += 1) {
         var j: isize = 0;

@@ -28,7 +28,7 @@ pub fn main() anyerror!void {
     rl.initWindow(screenWidth, screenHeight, "Game of Life");
     defer rl.closeWindow();
 
-    rl.setExitKey(rl.KeyboardKey.key_null); // Don't exit on Esc key press
+    rl.setExitKey(rl.KeyboardKey.null); // Don't exit on Esc key press
 
     rl.setTargetFPS(60);
 
