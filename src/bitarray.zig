@@ -4,14 +4,6 @@ const Signedness = std.builtin.Signedness;
 const builtin = std.builtin;
 
 fn isUnsignedInt(comptime T: type) bool {
-    // Case for zig version < 0.14.0
-    if (@hasField(builtin.Type, "Int")) {
-        return switch (@typeInfo(T)) {
-            .Int => |intInfo| intInfo.signedness == Signedness.unsigned,
-            else => false,
-        };
-    }
-
     return switch (@typeInfo(T)) {
         .int => |intInfo| intInfo.signedness == Signedness.unsigned,
         else => false,

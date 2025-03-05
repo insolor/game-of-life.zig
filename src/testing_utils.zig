@@ -3,11 +3,6 @@ const builtin = std.builtin;
 const testing = std.testing;
 
 fn get_struct_fields(comptime T: type) []const builtin.Type.StructField {
-    // Case for zig version < 0.14.0
-    if (@hasField(builtin.Type, "Struct")) {
-        return @typeInfo(T).Struct.fields;
-    }
-
     return @typeInfo(T).@"struct".fields;
 }
 
