@@ -17,7 +17,7 @@ fn ensureIsUnsignedInt(comptime T: type) void {
     }
 }
 
-/// Bit iterator for unsigned integers. Iterates over alle the bits of an unsigned integer from least significant
+/// Bit iterator for unsigned integers. Iterates over all the bits of an unsigned integer from least significant
 /// to most significant.
 fn BitIterator(comptime T: type) type {
     ensureIsUnsignedInt(T);
