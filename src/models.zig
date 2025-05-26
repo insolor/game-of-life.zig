@@ -183,6 +183,20 @@ pub const Field = struct {
     pub inline fn get_block_size() u8 {
         return BLOCK_SIZE;
     }
+
+    pub fn putObject(self: *Field, obj: []const u8, x: isize, y: isize) void {
+        var row_iterator = std.mem.splitScalar(u8, obj, '\n');
+        var i: isize = 0;
+        while (row_iterator.next()) |row| : (i += 1) {
+            var j: isize = 0;
+            for (row) |char| {
+                if (char != ' ') {
+                    self.setOn(x + @as(isize, j), y + i);
+                }
+                j += 1;
+            }
+        }
+    }
 };
 
 test "Block" {

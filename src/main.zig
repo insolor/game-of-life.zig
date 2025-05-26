@@ -21,8 +21,8 @@ pub fn main() anyerror!void {
     var field = Field.init(allocator);
     defer field.deinit();
 
-    object_library.putObject(&field, object_library.GLIDER, 1, 1);
-    object_library.putObject(&field, object_library.SPACESHIP, 1, 10);
+    field.putObject(object_library.GLIDER, 1, 1);
+    field.putObject(object_library.SPACESHIP, 1, 10);
 
     rl.initWindow(screenWidth, screenHeight, "Game of Life");
     defer rl.closeWindow();
