@@ -5,7 +5,6 @@ const models = @import("models.zig");
 const Field = models.Field;
 const object_library = @import("object_library.zig");
 const engine = @import("engine.zig");
-const calculate_field_next_state = engine.calculate_field_next_state;
 
 pub fn main() anyerror!void {
     const screenWidth = 800;
@@ -43,7 +42,7 @@ pub fn main() anyerror!void {
 
         // Update
         if (frame_count % frame_skip == 0) {
-            const next_state = calculate_field_next_state(field);
+            const next_state = engine.calculateFieldNextState(field);
             field.deinit();
             field = next_state;
         }
