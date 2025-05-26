@@ -9,8 +9,7 @@ const Pair = models.Pair;
 
 fn calculate_cell_next_state(self: Field, x: isize, y: isize) u1 {
     const current_state = self.get(x, y);
-    var sum: i8 = 0;
-    sum -= current_state;
+    var sum: u8 = 0;
 
     var i = x - 1;
     while (i <= x + 1) : (i += 1) {
@@ -19,6 +18,8 @@ fn calculate_cell_next_state(self: Field, x: isize, y: isize) u1 {
             sum += self.get(i, j);
         }
     }
+
+    sum -= current_state;
 
     if (current_state == 1) {
         return if (sum == 2 or sum == 3) 1 else 0;
