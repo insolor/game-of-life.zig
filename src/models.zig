@@ -62,7 +62,7 @@ pub fn Block(comptime T: type) type {
             return true;
         }
 
-        pub fn debug_print(self: Self) void {
+        pub fn debugPrint(self: Self) void {
             for (0..BLOCK_SIZE) |y| {
                 for (0..BLOCK_SIZE) |x| {
                     const value = self.get(x, y) catch unreachable;
@@ -116,7 +116,7 @@ pub const Field = struct {
     };
 
     /// Convert global coordinates of a cell in the field to block coordinates
-    fn convert_to_block_coords(x: isize, y: isize) BlockCoords {
+    fn convertToBlockCoords(x: isize, y: isize) BlockCoords {
         return .{
             .block_x = @divFloor(x, BLOCK_SIZE),
             .block_y = @divFloor(y, BLOCK_SIZE),
@@ -127,7 +127,7 @@ pub const Field = struct {
 
     /// Set a value to a cell with the given coordinates
     pub fn set(self: *Self, x: isize, y: isize, value: u1) void {
-        const coords = convert_to_block_coords(x, y);
+        const coords = convertToBlockCoords(x, y);
         var block: ?*BlockType = self.blocks.get(.{ coords.block_x, coords.block_y });
         if (block == null) {
             if (value == 0) {
@@ -143,7 +143,7 @@ pub const Field = struct {
 
     /// Set the cell's value to 1
     pub fn setOn(self: *Self, x: isize, y: isize) void {
-        const coords = convert_to_block_coords(x, y);
+        const coords = convertToBlockCoords(x, y);
         var block: ?*BlockType = self.blocks.get(.{ coords.block_x, coords.block_y });
         if (block == null) {
             block = BlockType.init(self.allocator);
@@ -155,7 +155,7 @@ pub const Field = struct {
 
     /// Get the value of a cell with the given coordinates
     pub fn get(self: Self, x: isize, y: isize) u1 {
-        const coords = convert_to_block_coords(x, y);
+        const coords = convertToBlockCoords(x, y);
         const block = self.blocks.get(.{ coords.block_x, coords.block_y }) orelse return 0;
         return block.get(coords.local_x, coords.local_y) catch unreachable;
     }
@@ -204,22 +204,22 @@ test "Block" {
 test "convert_to_block_coords" {
     try expectEqualStructs(
         .{ .block_x = 0, .block_y = 0, .local_x = 0, .local_y = 0 },
-        Field.convert_to_block_coords(0, 0),
+        Field.convertToBlockCoords(0, 0),
     );
 
     try expectEqualStructs(
         .{ .block_x = 0, .block_y = -1, .local_x = 0, .local_y = 31 },
-        Field.convert_to_block_coords(0, -1),
+        Field.convertToBlockCoords(0, -1),
     );
 
     try expectEqualStructs(
         .{ .block_x = -1, .block_y = 0, .local_x = 31, .local_y = 0 },
-        Field.convert_to_block_coords(-1, 0),
+        Field.convertToBlockCoords(-1, 0),
     );
 
     try expectEqualStructs(
         .{ .block_x = -1, .block_y = -1, .local_x = 31, .local_y = 31 },
-        Field.convert_to_block_coords(-1, -1),
+        Field.convertToBlockCoords(-1, -1),
     );
 }
 

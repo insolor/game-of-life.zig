@@ -3,7 +3,7 @@ const rl = @import("raylib");
 const display = @import("display.zig");
 const models = @import("models.zig");
 const Field = models.Field;
-const library = @import("library.zig");
+const object_library = @import("object_library.zig");
 const engine = @import("engine.zig");
 const calculate_field_next_state = engine.calculate_field_next_state;
 
@@ -22,8 +22,8 @@ pub fn main() anyerror!void {
     var field = Field.init(allocator);
     defer field.deinit();
 
-    library.putObject(&field, library.GLIDER, 1, 1);
-    library.putObject(&field, library.SPACESHIP, 1, 10);
+    object_library.putObject(&field, object_library.GLIDER, 1, 1);
+    object_library.putObject(&field, object_library.SPACESHIP, 1, 10);
 
     rl.initWindow(screenWidth, screenHeight, "Game of Life");
     defer rl.closeWindow();

@@ -7,7 +7,7 @@ const Field = models.Field;
 const Block = models.Block;
 const Pair = models.Pair;
 
-fn calculate_cell_next_state(self: Field, x: isize, y: isize) u1 {
+fn calculateCellNextState(self: Field, x: isize, y: isize) u1 {
     const current_state = self.get(x, y);
     var sum: u8 = 0;
 
@@ -28,7 +28,7 @@ fn calculate_cell_next_state(self: Field, x: isize, y: isize) u1 {
     }
 }
 
-pub fn calculate_field_next_state(field: Field) Field {
+pub fn calculateFieldNextState(field: Field) Field {
     var result = Field.init(field.allocator);
 
     var calculated_cells = AutoHashMap(Pair, void).init(field.allocator);
@@ -49,7 +49,7 @@ pub fn calculate_field_next_state(field: Field) Field {
                     continue;
                 }
 
-                const new_cell_state = calculate_cell_next_state(field, x, y);
+                const new_cell_state = calculateCellNextState(field, x, y);
                 if (new_cell_state == 1) {
                     result.setOn(x, y);
                 }
@@ -66,15 +66,15 @@ test "Calculate next cell state" {
     defer field.deinit();
 
     field.setOn(0, 0);
-    try testing.expectEqual(0, calculate_cell_next_state(field, 0, 0));
+    try testing.expectEqual(0, calculateCellNextState(field, 0, 0));
 
     // 10
     // 11
 
     field.setOn(0, 1);
     field.setOn(1, 1);
-    try testing.expectEqual(1, calculate_cell_next_state(field, 0, 0));
-    try testing.expectEqual(1, calculate_cell_next_state(field, 1, 0));
+    try testing.expectEqual(1, calculateCellNextState(field, 0, 0));
+    try testing.expectEqual(1, calculateCellNextState(field, 1, 0));
 }
 
 test "Calculate next field state (glider)" {
@@ -92,7 +92,7 @@ test "Calculate next field state (glider)" {
     field.setOn(1, 2);
     field.setOn(2, 2);
 
-    var result = calculate_field_next_state(field);
+    var result = calculateFieldNextState(field);
     defer result.deinit();
     try testing.expect(!result.isEmpty());
     // Expected state here:
@@ -122,7 +122,7 @@ test "Calculate next field state (blinker)" {
     field.setOn(1, 0);
     field.setOn(2, 0);
 
-    var result = calculate_field_next_state(field);
+    var result = calculateFieldNextState(field);
     defer result.deinit();
     try testing.expect(!result.isEmpty());
 
