@@ -51,6 +51,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/tests.zig"),
         .target = target,
         .optimize = optimize,
+        .test_runner = .{ .path = b.path("test_runner.zig"), .mode = .simple },
     });
 
     const run_unit_tests = b.addRunArtifact(unit_tests);
