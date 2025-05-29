@@ -8,7 +8,7 @@ fn getStructFields(comptime T: type) []const builtin.Type.StructField {
 
 /// Asserts that all fields of the structs are equal
 pub fn expectEqualStructs(expected: anytype, actual: anytype) !void {
-    inline for (getStructFields(@TypeOf(actual))) |field| {
+    inline for (getStructFields(@TypeOf(expected))) |field| {
         try testing.expectEqual(
             @field(expected, field.name),
             @field(actual, field.name),
