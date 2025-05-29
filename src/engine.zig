@@ -1,6 +1,7 @@
 const std = @import("std");
 const testing = std.testing;
 const models = @import("models.zig");
+const object_library = @import("object_library.zig");
 
 const AutoHashMap = std.AutoHashMap;
 const Field = models.Field;
@@ -85,11 +86,7 @@ test "Calculate next field state (glider)" {
     // 001
     // 111
 
-    try field.setOn(1, 0);
-    try field.setOn(2, 1);
-    try field.setOn(0, 2);
-    try field.setOn(1, 2);
-    try field.setOn(2, 2);
+    try field.putObject(object_library.GLIDER, 0, 0);
 
     var result = try calculateFieldNextState(field);
     defer result.deinit();
@@ -117,9 +114,7 @@ test "Calculate next field state (blinker)" {
     // Initial state:
     // 111
 
-    try field.setOn(0, 0);
-    try field.setOn(1, 0);
-    try field.setOn(2, 0);
+    try field.putObject(object_library.BLINKER, 0, 0);
 
     var result = try calculateFieldNextState(field);
     defer result.deinit();
