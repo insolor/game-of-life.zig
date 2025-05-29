@@ -4,18 +4,17 @@ const models = @import("models.zig");
 
 const AutoHashMap = std.AutoHashMap;
 const Field = models.Field;
-const Block = models.Block;
 const Pair = models.Pair;
 
-fn calculateCellNextState(self: Field, x: isize, y: isize) u1 {
-    const current_state = self.get(x, y);
+fn calculateCellNextState(field: Field, x: isize, y: isize) !u1 {
+    const current_state = try field.get(x, y);
     var sum: u8 = 0;
 
     var i = x - 1;
     while (i <= x + 1) : (i += 1) {
         var j = y - 1;
         while (j <= y + 1) : (j += 1) {
-            sum += self.get(i, j);
+            sum += try field.get(i, j);
         }
     }
 
@@ -28,7 +27,7 @@ fn calculateCellNextState(self: Field, x: isize, y: isize) u1 {
     }
 }
 
-pub fn calculateFieldNextState(field: Field) Field {
+pub fn calculateFieldNextState(field: Field) !Field {
     var result = Field.init(field.allocator);
 
     var calculated_cells = AutoHashMap(Pair, void).init(field.allocator);
@@ -49,11 +48,11 @@ pub fn calculateFieldNextState(field: Field) Field {
                     continue;
                 }
 
-                const new_cell_state = calculateCellNextState(field, x, y);
+                const new_cell_state = try calculateCellNextState(field, x, y);
                 if (new_cell_state == 1) {
-                    result.setOn(x, y);
+                    try result.setOn(x, y);
                 }
-                calculated_cells.put(.{ x, y }, {}) catch unreachable;
+                try calculated_cells.put(.{ x, y }, {});
             }
         }
     }
@@ -65,16 +64,16 @@ test "Calculate next cell state" {
     var field = Field.init(testing.allocator);
     defer field.deinit();
 
-    field.setOn(0, 0);
-    try testing.expectEqual(0, calculateCellNextState(field, 0, 0));
+    try field.setOn(0, 0);
+    try testing.expectEqual(0, try calculateCellNextState(field, 0, 0));
 
     // 10
     // 11
 
-    field.setOn(0, 1);
-    field.setOn(1, 1);
-    try testing.expectEqual(1, calculateCellNextState(field, 0, 0));
-    try testing.expectEqual(1, calculateCellNextState(field, 1, 0));
+    try field.setOn(0, 1);
+    try field.setOn(1, 1);
+    try testing.expectEqual(1, try calculateCellNextState(field, 0, 0));
+    try testing.expectEqual(1, try calculateCellNextState(field, 1, 0));
 }
 
 test "Calculate next field state (glider)" {
@@ -86,13 +85,13 @@ test "Calculate next field state (glider)" {
     // 001
     // 111
 
-    field.setOn(1, 0);
-    field.setOn(2, 1);
-    field.setOn(0, 2);
-    field.setOn(1, 2);
-    field.setOn(2, 2);
+    try field.setOn(1, 0);
+    try field.setOn(2, 1);
+    try field.setOn(0, 2);
+    try field.setOn(1, 2);
+    try field.setOn(2, 2);
 
-    var result = calculateFieldNextState(field);
+    var result = try calculateFieldNextState(field);
     defer result.deinit();
     try testing.expect(!result.isEmpty());
     // Expected state here:
@@ -102,11 +101,11 @@ test "Calculate next field state (glider)" {
     // 010
 
     // After clearing cells that are expected to be 1 the field should be empty:
-    result.set(0, 1, 0);
-    result.set(2, 1, 0);
-    result.set(1, 2, 0);
-    result.set(2, 2, 0);
-    result.set(1, 3, 0);
+    try result.set(0, 1, 0);
+    try result.set(2, 1, 0);
+    try result.set(1, 2, 0);
+    try result.set(2, 2, 0);
+    try result.set(1, 3, 0);
 
     try testing.expect(result.isEmpty());
 }
@@ -118,11 +117,11 @@ test "Calculate next field state (blinker)" {
     // Initial state:
     // 111
 
-    field.setOn(0, 0);
-    field.setOn(1, 0);
-    field.setOn(2, 0);
+    try field.setOn(0, 0);
+    try field.setOn(1, 0);
+    try field.setOn(2, 0);
 
-    var result = calculateFieldNextState(field);
+    var result = try calculateFieldNextState(field);
     defer result.deinit();
     try testing.expect(!result.isEmpty());
 
@@ -134,8 +133,8 @@ test "Calculate next field state (blinker)" {
 
     try testing.expectEqual(2, result.blocks.count());
 
-    result.set(1, -1, 0);
-    result.set(1, 0, 0);
-    result.set(1, 1, 0);
+    try result.set(1, -1, 0);
+    try result.set(1, 0, 0);
+    try result.set(1, 1, 0);
     try testing.expect(result.isEmpty());
 }

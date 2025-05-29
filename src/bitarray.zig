@@ -1,7 +1,6 @@
 const std = @import("std");
 const testing = std.testing;
 const Signedness = std.builtin.Signedness;
-const builtin = std.builtin;
 
 fn isUnsignedInt(comptime T: type) bool {
     return switch (@typeInfo(T)) {
@@ -129,8 +128,8 @@ pub fn BitArray(comptime T: type) type {
     };
 }
 
-const BitArray32 = BitArray(u32);
-const BitArray64 = BitArray(u64);
+pub const BitArray32 = BitArray(u32);
+pub const BitArray64 = BitArray(u64);
 
 test "BitArray" {
     var bitarray = BitArray32{};

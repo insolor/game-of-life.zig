@@ -21,8 +21,8 @@ pub fn main() anyerror!void {
     var field = Field.init(allocator);
     defer field.deinit();
 
-    field.putObject(object_library.GLIDER, 1, 1);
-    field.putObject(object_library.SPACESHIP, 1, 10);
+    try field.putObject(object_library.GLIDER, 1, 1);
+    try field.putObject(object_library.SPACESHIP, 1, 10);
 
     rl.initWindow(screenWidth, screenHeight, "Game of Life");
     defer rl.closeWindow();
@@ -42,7 +42,7 @@ pub fn main() anyerror!void {
 
         // Update
         if (frame_count % frame_skip == 0) {
-            const next_state = engine.calculateFieldNextState(field);
+            const next_state = try engine.calculateFieldNextState(field);
             field.deinit();
             field = next_state;
         }
