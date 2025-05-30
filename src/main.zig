@@ -5,7 +5,6 @@ const models = @import("models.zig");
 const Field = models.Field;
 const object_library = @import("object_library.zig");
 const engine = @import("engine.zig");
-const pow = std.math.pow;
 
 const PanningParams = struct {
     initial_mouse_x: isize,
