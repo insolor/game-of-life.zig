@@ -126,13 +126,11 @@ const App = struct {
     fn scaling(self: *Self) void {
         const mouse_wheel: isize = @intFromFloat(rl.getMouseWheelMove());
         if (mouse_wheel != 0) {
-            const old_scale_factor = self.display_params.scale_factor;
-            const new_scale_factor = @min(255, @max(0, old_scale_factor + mouse_wheel));
             const mouse_position = Self.getMousePosition();
-            self.display_params.scaleAt(
+            self.display_params.zoomAt(
                 mouse_position.x,
                 mouse_position.y,
-                new_scale_factor,
+                mouse_wheel,
             );
         }
     }

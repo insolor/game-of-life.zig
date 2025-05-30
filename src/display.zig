@@ -20,6 +20,7 @@ pub const DisplayParams = struct {
     pixel_offset_y: isize = 0,
 
     const SCALING_BASE = 2;
+    const MAX_SCALE_FACTOR = 8;
     const Self = @This();
 
     pub fn scaleAt(self: *Self, mouse_x: isize, mouse_y: isize, new_scale_factor: u8) void {
@@ -30,10 +31,21 @@ pub const DisplayParams = struct {
         self.pixel_offset_y = @divFloor((self.pixel_offset_y - mouse_y) * new_scale, old_scale) + mouse_y;
     }
 
+    pub fn zoomAt(self: *Self, mouse_x: isize, mouse_y: isize, zoom_delta: isize) void {
+        const old_scale_factor = self.scale_factor;
+        const new_scale_factor = @min(MAX_SCALE_FACTOR, @max(0, old_scale_factor + zoom_delta));
+        self.scaleAt(
+            mouse_x,
+            mouse_y,
+            new_scale_factor,
+        );
+    }
+
     pub fn screenToFieldsCoords(self: Self, screen_x: usize, screen_y: usize) Pair {
+        const scale = self.getIntScale();
         return .{
-            (screen_x - self.pixel_offset_x) / self.scale,
-            (screen_y - self.pixel_offset_y) / self.scale,
+            (screen_x - self.pixel_offset_x) / scale,
+            (screen_y - self.pixel_offset_y) / scale,
         };
     }
 
