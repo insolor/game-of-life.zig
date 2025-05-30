@@ -14,7 +14,7 @@ const PanningParams = struct {
 
     const Self = @This();
     fn offsetX(self: Self, mouse_x: isize) isize {
-        return self.initial_mouse_x + mouse_x - self.initial_mouse_x;
+        return self.initial_offset_x + mouse_x - self.initial_mouse_x;
     }
 
     fn offsetY(self: Self, mouse_y: isize) isize {
