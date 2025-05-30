@@ -11,6 +11,8 @@ const App = struct {
     field: Field,
     display_params: display.DisplayParams,
     frame_skip: usize = 10,
+    is_running: bool = true,
+    step: bool = false,
 
     const Self = @This();
     fn init(allocator: std.mem.Allocator, screen_width: usize, screen_height: usize) Self {
@@ -35,7 +37,7 @@ const App = struct {
             @intCast(self.display_params.height),
             "Game of Life",
         );
-        rl.setExitKey(rl.KeyboardKey.null); // Don't exit on Esc key press
+        rl.setExitKey(rl.KeyboardKey.q);
         rl.setTargetFPS(60);
     }
 
@@ -53,14 +55,47 @@ const App = struct {
         self.field = next_state;
     }
 
+    fn runningControls(self: *Self) void {
+        // space - start/stop
+        if (rl.isKeyPressed(rl.KeyboardKey.space)) {
+            self.is_running = !self.is_running;
+        }
+
+        // enter - run step by step
+        if (rl.isKeyPressed(rl.KeyboardKey.enter)) {
+            self.is_running = false;
+            self.step = true;
+        }
+        
+        // right - faster
+        if (rl.isKeyPressed(rl.KeyboardKey.right)) {
+            if (!self.is_running) {
+                self.is_running = true;
+            } else {
+                self.frame_skip = @max(1, self.frame_skip - 1);
+            }
+        }
+        
+        // left - slower
+        if (rl.isKeyPressed(rl.KeyboardKey.left)) {
+            if (!self.is_running) {
+                self.is_running = true;
+            } else {
+                self.frame_skip = self.frame_skip + 1;
+            }
+        }
+    }
+
     fn run(self: *Self) !void {
         self.initDisplay();
 
         var frame_count: usize = 0;
         while (!rl.windowShouldClose()) : (frame_count += 1) {
+            self.runningControls();
             self.draw();
-            if (frame_count % self.frame_skip == 0) {
+            if ((self.is_running or self.step) and frame_count % self.frame_skip == 0) {
                 try self.nextFieldState();
+                self.step = false;
             }
         }
     }
