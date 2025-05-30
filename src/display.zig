@@ -54,7 +54,7 @@ pub const DisplayParams = struct {
     }
 };
 
-fn displayBlock(block: *const Block(u32), params: DisplayParams, screen_x: i32, screen_y: i32) void {
+fn displayBlock(block: Block(u32), params: DisplayParams, screen_x: i32, screen_y: i32) void {
     const scale: i32 = @intCast(params.getIntScale());
 
     var y: i32 = 0;
@@ -120,7 +120,7 @@ pub fn displayField(field: Field, params: DisplayParams) void {
         }
 
         displayBlock(
-            block.*,
+            block.*.*,
             params,
             @intCast(block_screen_x),
             @intCast(block_screen_y),
