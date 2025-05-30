@@ -5,6 +5,9 @@ const models = @import("models.zig");
 const Field = models.Field;
 const object_library = @import("object_library.zig");
 const engine = @import("engine.zig");
+const pow = std.math.pow;
+
+const SCALING_MULTIPLIER = 1.25;
 
 const PanningParams = struct {
     initial_mouse_x: isize,
@@ -104,21 +107,37 @@ const App = struct {
             },
             .w, .up => {
                 // pan up
-                self.display_params.pixel_offset_y += keyboard_panning_cells_step * self.display_params.scale;
+                self.display_params.pixel_offset_y += keyboard_panning_cells_step * self.display_params.getIntScale();
             },
             .s, .down => {
                 // pan down
-                self.display_params.pixel_offset_y -= keyboard_panning_cells_step * self.display_params.scale;
+                self.display_params.pixel_offset_y -= keyboard_panning_cells_step * self.display_params.getIntScale();
             },
             .a, .left => {
                 // pan left
-                self.display_params.pixel_offset_x += keyboard_panning_cells_step * self.display_params.scale;
+                self.display_params.pixel_offset_x += keyboard_panning_cells_step * self.display_params.getIntScale();
             },
             .d, .right => {
                 // pan right
-                self.display_params.pixel_offset_x -= keyboard_panning_cells_step * self.display_params.scale;
+                self.display_params.pixel_offset_x -= keyboard_panning_cells_step * self.display_params.getIntScale();
             },
             else => {},
+        }
+    }
+
+    fn scaling(self: *Self) void {
+        const mouse_wheel = rl.getMouseWheelMove();
+        if (mouse_wheel != 0.0) {
+            const old_scale: f32 = self.display_params.scale;
+            std.debug.print("old_scale: {}\n", .{old_scale});
+            const new_scale: f32 = @max(1.0, old_scale * pow(f32, SCALING_MULTIPLIER, mouse_wheel));
+            std.debug.print("new_scale: {}\n", .{new_scale});
+            const mouse_position = Self.getMousePosition();
+            self.display_params.scaleAt(
+                mouse_position.x,
+                mouse_position.y,
+                new_scale,
+            );
         }
     }
 
@@ -160,6 +179,7 @@ const App = struct {
         while (!rl.windowShouldClose()) : (frame_count += 1) {
             self.keyboardControls();
             self.panning();
+            self.scaling();
             self.draw();
             if ((self.is_running or self.step) and frame_count % self.frame_skip == 0) {
                 try self.nextFieldState();

@@ -7,31 +7,41 @@ const Field = models.Field;
 
 const DRAW_COLOR = rl.Color.white;
 
+inline fn float32FromInt(value: anytype) f32 {
+    return @floatFromInt(value);
+}
+
 pub const DisplayParams = struct {
     width: usize,
     height: usize,
-    scale: u8 = 16,
+    scale: f32 = 16,
     pixel_offset_x: isize = 0,
     pixel_offset_y: isize = 0,
 
     const Self = @This();
 
-    fn scaleAt(self: Self, mouse_x: usize, mouse_y: usize, new_scale: usize) void {
+    pub fn scaleAt(self: *Self, mouse_x: isize, mouse_y: isize, new_scale: f32) void {
         const old_scale = self.scale;
-        self.pixel_offset_x = (self.pixel_offset_x - mouse_x) * new_scale / old_scale + mouse_x;
-        self.pixel_offset_y = (self.pixel_offset_y - mouse_y) * new_scale / old_scale + mouse_y;
         self.scale = new_scale;
+        self.pixel_offset_x = @intFromFloat(float32FromInt(self.pixel_offset_x - mouse_x) * new_scale / old_scale + float32FromInt(mouse_x));
+        self.pixel_offset_y = @intFromFloat(float32FromInt(self.pixel_offset_y - mouse_y) * new_scale / old_scale + float32FromInt(mouse_y));
     }
 
-    fn screenToFieldsCoords(self: Self, screen_x: usize, screen_y: usize) Pair {
+    pub fn screenToFieldsCoords(self: Self, screen_x: usize, screen_y: usize) Pair {
         return .{
             (screen_x - self.pixel_offset_x) / self.scale,
             (screen_y - self.pixel_offset_y) / self.scale,
         };
     }
+
+    pub inline fn getIntScale(self: Self) u8 {
+        return @intFromFloat(self.scale);
+    }
 };
 
 fn displayBlock(block: *const Block(u32), params: DisplayParams, screen_x: i32, screen_y: i32) void {
+    const scale: u8 = params.getIntScale();
+
     var y: i32 = 0;
     for (block.rows) |row| {
         defer y += 1;
@@ -39,8 +49,8 @@ fn displayBlock(block: *const Block(u32), params: DisplayParams, screen_x: i32, 
             continue;
         }
 
-        const cell_screen_y: i32 = screen_y + y * params.scale;
-        if (!(cell_screen_y + params.scale >= 0 and cell_screen_y < params.height)) {
+        const cell_screen_y: i32 = screen_y + y * scale;
+        if (!(cell_screen_y + scale >= 0 and cell_screen_y < params.height)) {
             continue;
         }
 
@@ -51,12 +61,12 @@ fn displayBlock(block: *const Block(u32), params: DisplayParams, screen_x: i32, 
                 continue;
             }
 
-            const cell_screen_x: i32 = screen_x + x * params.scale;
-            if (!(cell_screen_x + params.scale >= 0 and cell_screen_x < params.width)) {
+            const cell_screen_x: i32 = screen_x + x * scale;
+            if (!(cell_screen_x + scale >= 0 and cell_screen_x < params.width)) {
                 continue;
             }
 
-            if (params.scale <= 1) {
+            if (scale <= 1) {
                 rl.drawPixel(
                     cell_screen_x,
                     cell_screen_y,
@@ -66,8 +76,8 @@ fn displayBlock(block: *const Block(u32), params: DisplayParams, screen_x: i32, 
                 rl.drawRectangle(
                     cell_screen_x,
                     cell_screen_y,
-                    params.scale,
-                    params.scale,
+                    scale,
+                    scale,
                     DRAW_COLOR,
                 );
             }
@@ -76,7 +86,7 @@ fn displayBlock(block: *const Block(u32), params: DisplayParams, screen_x: i32, 
 }
 
 pub fn displayField(field: Field, params: DisplayParams) void {
-    const block_pixel_size: u32 = @as(u32, Field.get_block_size()) * params.scale;
+    const block_pixel_size: u32 = @as(u32, Field.get_block_size()) * @as(u32, @intFromFloat(params.scale));
 
     var block_iterator = field.blocks.iterator();
     while (block_iterator.next()) |entry| {
