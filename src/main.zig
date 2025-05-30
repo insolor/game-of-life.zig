@@ -14,10 +14,6 @@ const App = struct {
 
     const Self = @This();
     fn init(allocator: std.mem.Allocator, screen_width: usize, screen_height: usize) Self {
-        rl.initWindow(@intCast(screen_width), @intCast(screen_height), "Game of Life");
-        rl.setExitKey(rl.KeyboardKey.null); // Don't exit on Esc key press
-        rl.setTargetFPS(60);
-
         return .{
             .allocator = allocator,
             .field = Field.init(allocator),
@@ -33,21 +29,38 @@ const App = struct {
         self.field.deinit();
     }
 
-    fn mainLoop(self: *Self) !void {
-        var frame_count: u32 = 0;
+    fn initDisplay(self: Self) void {
+        rl.initWindow(
+            @intCast(self.display_params.width),
+            @intCast(self.display_params.height),
+            "Game of Life",
+        );
+        rl.setExitKey(rl.KeyboardKey.null); // Don't exit on Esc key press
+        rl.setTargetFPS(60);
+    }
+
+    fn draw(self: Self) void {
+        rl.beginDrawing();
+        defer rl.endDrawing();
+
+        rl.clearBackground(rl.Color.black);
+        display.displayField(self.field, self.display_params);
+    }
+
+    fn nextFieldState(self: *Self) !void {
+        const next_state = try engine.calculateFieldNextState(self.field);
+        self.field.deinit();
+        self.field = next_state;
+    }
+
+    fn run(self: *Self) !void {
+        self.initDisplay();
+
+        var frame_count: usize = 0;
         while (!rl.windowShouldClose()) : (frame_count += 1) {
-            // Draw
-            rl.beginDrawing();
-            defer rl.endDrawing();
-
-            rl.clearBackground(rl.Color.black);
-            display.displayField(self.field, self.display_params);
-
-            // Update
+            self.draw();
             if (frame_count % self.frame_skip == 0) {
-                const next_state = try engine.calculateFieldNextState(self.field);
-                self.field.deinit();
-                self.field = next_state;
+                try self.nextFieldState();
             }
         }
     }
@@ -62,5 +75,5 @@ pub fn main() anyerror!void {
     try app.field.putObject(object_library.GLIDER, 1, 1);
     try app.field.putObject(object_library.SPACESHIP, 1, 10);
 
-    try app.mainLoop();
+    try app.run();
 }
