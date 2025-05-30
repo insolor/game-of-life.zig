@@ -6,6 +6,7 @@ const Field = models.Field;
 const object_library = @import("object_library.zig");
 const engine = @import("engine.zig");
 
+/// A set of parameters needed to control view panning with the middle mouse button
 const PanningParams = struct {
     initial_mouse_x: isize,
     initial_mouse_y: isize,
@@ -22,6 +23,7 @@ const PanningParams = struct {
     }
 };
 
+/// Main application class
 const App = struct {
     allocator: std.mem.Allocator,
     field: Field,

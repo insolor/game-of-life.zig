@@ -8,10 +8,7 @@ const Field = models.Field;
 
 const DRAW_COLOR = rl.Color.white;
 
-inline fn float32FromInt(value: anytype) f32 {
-    return @floatFromInt(value);
-}
-
+/// Parameters needed to display the field
 pub const DisplayParams = struct {
     width: usize,
     height: usize,
@@ -54,6 +51,7 @@ pub const DisplayParams = struct {
     }
 };
 
+/// Display one block of the field
 fn displayBlock(block: Block(u32), params: DisplayParams, screen_x: i32, screen_y: i32) void {
     const scale: i32 = @intCast(params.getIntScale());
 
@@ -100,6 +98,7 @@ fn displayBlock(block: Block(u32), params: DisplayParams, screen_x: i32, screen_
     }
 }
 
+/// Display visible part of the field
 pub fn displayField(field: Field, params: DisplayParams) void {
     const block_pixel_size: u32 = @as(u32, Field.get_block_size()) * params.getIntScale();
 

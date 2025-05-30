@@ -2,6 +2,7 @@ const std = @import("std");
 const testing = std.testing;
 const Signedness = std.builtin.Signedness;
 
+/// At compiletime check that the given type is an unsigned integer (like u32, u64, etc.)
 fn isUnsignedInt(comptime T: type) bool {
     return switch (@typeInfo(T)) {
         .int => |intInfo| intInfo.signedness == Signedness.unsigned,
@@ -9,7 +10,7 @@ fn isUnsignedInt(comptime T: type) bool {
     };
 }
 
-/// At compiletime check that the given type is an unsigned integer (like u32, u64, etc.)
+/// At compiletime check (assert) that the given type is an unsigned integer (like u32, u64, etc.)
 fn ensureIsUnsignedInt(comptime T: type) void {
     if (!isUnsignedInt(T)) {
         @compileError("Expected an unsigned integer type, but got: " ++ @typeName(T));
@@ -48,6 +49,7 @@ fn BitIterator(comptime T: type) type {
     };
 }
 
+/// A simple implementation of a bit array based on an unsigned integer value
 pub fn BitArray(comptime T: type) type {
     ensureIsUnsignedInt(T);
 

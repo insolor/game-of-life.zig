@@ -19,6 +19,7 @@ pub fn Block(comptime T: type) type {
 
         const Self = @This();
 
+        /// Initialize a new block
         fn init(allocator: std.mem.Allocator) !*Self {
             var self = try allocator.create(Self);
             self.allocator = allocator;
@@ -26,6 +27,7 @@ pub fn Block(comptime T: type) type {
             return self;
         }
 
+        /// Deinitialize the block
         fn deinit(self: *Self) void {
             self.allocator.destroy(self);
         }
@@ -62,6 +64,7 @@ pub fn Block(comptime T: type) type {
             return true;
         }
 
+        /// Print contents of the block to the terminal
         pub fn debugPrint(self: Self) !void {
             for (0..BLOCK_SIZE) |y| {
                 for (0..BLOCK_SIZE) |x| {
@@ -74,8 +77,10 @@ pub fn Block(comptime T: type) type {
     };
 }
 
+/// A pair of signed integer values
 pub const Pair = struct { isize, isize };
 
+/// A class represening the game field
 pub const Field = struct {
     const BLOCK_ROW_TYPE = u32;
     const BLOCK_SIZE = @bitSizeOf(BLOCK_ROW_TYPE);
@@ -89,6 +94,7 @@ pub const Field = struct {
 
     const Self = @This();
 
+    /// Initialize a new field
     pub fn init(allocator: std.mem.Allocator) Field {
         return Field{
             .blocks = AutoHashMap(Pair, *BlockType).init(allocator),
@@ -96,6 +102,7 @@ pub const Field = struct {
         };
     }
 
+    /// Deinitialize the field
     pub fn deinit(self: *Field) void {
         var value_iterator = self.blocks.valueIterator();
         while (value_iterator.next()) |block| {
@@ -104,6 +111,7 @@ pub const Field = struct {
         self.blocks.deinit();
     }
 
+    /// Coordinates of a block in the field and a cell in the block
     const BlockCoords = struct {
         /// x coordinate of the block in the hashmap
         block_x: isize,

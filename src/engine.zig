@@ -7,6 +7,7 @@ const AutoHashMap = std.AutoHashMap;
 const Field = models.Field;
 const Pair = models.Pair;
 
+/// Calculate next state of a single cell of the field based on count of the cell's neighbours
 fn calculateCellNextState(field: Field, x: isize, y: isize) !u1 {
     const current_state = try field.get(x, y);
     var sum: u8 = 0;
@@ -28,6 +29,7 @@ fn calculateCellNextState(field: Field, x: isize, y: isize) !u1 {
     }
 }
 
+/// Calculate next state of the entire field
 pub fn calculateFieldNextState(field: Field) !Field {
     var result = Field.init(field.allocator);
 
