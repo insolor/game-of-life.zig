@@ -32,6 +32,8 @@ const App = struct {
     is_running: bool = true,
     step: bool = false,
 
+    const keyboard_panning_cells_step = 5;
+
     const Self = @This();
     fn init(allocator: std.mem.Allocator, screen_width: usize, screen_height: usize) Self {
         return .{
@@ -101,6 +103,22 @@ const App = struct {
             } else {
                 self.frame_skip = self.frame_skip + 1;
             }
+        }
+
+        if (rl.isKeyPressed(rl.KeyboardKey.w)) {
+            self.display_params.pixel_offset_y += keyboard_panning_cells_step * self.display_params.scale;
+        }
+
+        if (rl.isKeyPressed(rl.KeyboardKey.s)) {
+            self.display_params.pixel_offset_y -= keyboard_panning_cells_step * self.display_params.scale;
+        }
+
+        if (rl.isKeyPressed(rl.KeyboardKey.a)) {
+            self.display_params.pixel_offset_x += keyboard_panning_cells_step * self.display_params.scale;
+        }
+
+        if (rl.isKeyPressed(rl.KeyboardKey.d)) {
+            self.display_params.pixel_offset_x -= keyboard_panning_cells_step * self.display_params.scale;
         }
     }
 
