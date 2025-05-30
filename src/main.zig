@@ -75,50 +75,50 @@ const App = struct {
         self.field = next_state;
     }
 
-    fn runningControls(self: *Self) void {
-        // space - start/stop
-        if (rl.isKeyPressed(rl.KeyboardKey.space)) {
-            self.is_running = !self.is_running;
-        }
-
-        // enter - run step by step
-        if (rl.isKeyPressed(rl.KeyboardKey.enter)) {
-            self.is_running = false;
-            self.step = true;
-        }
-
-        // right - faster
-        if (rl.isKeyPressed(rl.KeyboardKey.right)) {
-            if (!self.is_running) {
-                self.is_running = true;
-            } else {
-                self.frame_skip = @max(1, self.frame_skip - 1);
-            }
-        }
-
-        // left - slower
-        if (rl.isKeyPressed(rl.KeyboardKey.left)) {
-            if (!self.is_running) {
-                self.is_running = true;
-            } else {
-                self.frame_skip = self.frame_skip + 1;
-            }
-        }
-
-        if (rl.isKeyPressed(rl.KeyboardKey.w)) {
-            self.display_params.pixel_offset_y += keyboard_panning_cells_step * self.display_params.scale;
-        }
-
-        if (rl.isKeyPressed(rl.KeyboardKey.s)) {
-            self.display_params.pixel_offset_y -= keyboard_panning_cells_step * self.display_params.scale;
-        }
-
-        if (rl.isKeyPressed(rl.KeyboardKey.a)) {
-            self.display_params.pixel_offset_x += keyboard_panning_cells_step * self.display_params.scale;
-        }
-
-        if (rl.isKeyPressed(rl.KeyboardKey.d)) {
-            self.display_params.pixel_offset_x -= keyboard_panning_cells_step * self.display_params.scale;
+    fn keyboardControls(self: *Self) void {
+        switch (rl.getKeyPressed()) {
+            .space => {
+                // start/stop
+                self.is_running = !self.is_running;
+            },
+            .enter => {
+                // run step by step
+                self.is_running = false;
+                self.step = true;
+            },
+            .kp_add => {
+                // numpad plus - run faster
+                if (!self.is_running) {
+                    self.is_running = true;
+                } else {
+                    self.frame_skip = @max(1, self.frame_skip - 1);
+                }
+            },
+            .kp_subtract => {
+                // numpad minus - run slower
+                if (!self.is_running) {
+                    self.is_running = true;
+                } else {
+                    self.frame_skip = self.frame_skip + 1;
+                }
+            },
+            .w, .up => {
+                // pan up
+                self.display_params.pixel_offset_y += keyboard_panning_cells_step * self.display_params.scale;
+            },
+            .s, .down => {
+                // pan down
+                self.display_params.pixel_offset_y -= keyboard_panning_cells_step * self.display_params.scale;
+            },
+            .a, .left => {
+                // pan left
+                self.display_params.pixel_offset_x += keyboard_panning_cells_step * self.display_params.scale;
+            },
+            .d, .right => {
+                // pan right
+                self.display_params.pixel_offset_x -= keyboard_panning_cells_step * self.display_params.scale;
+            },
+            else => {},
         }
     }
 
@@ -158,7 +158,7 @@ const App = struct {
 
         var frame_count: usize = 0;
         while (!rl.windowShouldClose()) : (frame_count += 1) {
-            self.runningControls();
+            self.keyboardControls();
             self.panning();
             self.draw();
             if ((self.is_running or self.step) and frame_count % self.frame_skip == 0) {
