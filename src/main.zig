@@ -7,8 +7,6 @@ const object_library = @import("object_library.zig");
 const engine = @import("engine.zig");
 const pow = std.math.pow;
 
-const SCALING_MULTIPLIER = 1.25;
-
 const PanningParams = struct {
     initial_mouse_x: isize,
     initial_mouse_y: isize,
@@ -126,17 +124,15 @@ const App = struct {
     }
 
     fn scaling(self: *Self) void {
-        const mouse_wheel = rl.getMouseWheelMove();
-        if (mouse_wheel != 0.0) {
-            const old_scale: f32 = self.display_params.scale;
-            std.debug.print("old_scale: {}\n", .{old_scale});
-            const new_scale: f32 = @max(1.0, old_scale * pow(f32, SCALING_MULTIPLIER, mouse_wheel));
-            std.debug.print("new_scale: {}\n", .{new_scale});
+        const mouse_wheel: isize = @intFromFloat(rl.getMouseWheelMove());
+        if (mouse_wheel != 0) {
+            const old_scale_factor = self.display_params.scale_factor;
+            const new_scale_factor = @min(255, @max(0, old_scale_factor + mouse_wheel));
             const mouse_position = Self.getMousePosition();
             self.display_params.scaleAt(
                 mouse_position.x,
                 mouse_position.y,
-                new_scale,
+                new_scale_factor,
             );
         }
     }

@@ -1,4 +1,5 @@
 const rl = @import("raylib");
+const std = @import("std");
 
 const models = @import("models.zig");
 const Pair = models.Pair;
@@ -14,17 +15,19 @@ inline fn float32FromInt(value: anytype) f32 {
 pub const DisplayParams = struct {
     width: usize,
     height: usize,
-    scale: f32 = 16,
+    scale_factor: u8 = 4,
     pixel_offset_x: isize = 0,
     pixel_offset_y: isize = 0,
 
+    const SCALING_BASE = 2;
     const Self = @This();
 
-    pub fn scaleAt(self: *Self, mouse_x: isize, mouse_y: isize, new_scale: f32) void {
-        const old_scale = self.scale;
-        self.scale = new_scale;
-        self.pixel_offset_x = @intFromFloat(float32FromInt(self.pixel_offset_x - mouse_x) * new_scale / old_scale + float32FromInt(mouse_x));
-        self.pixel_offset_y = @intFromFloat(float32FromInt(self.pixel_offset_y - mouse_y) * new_scale / old_scale + float32FromInt(mouse_y));
+    pub fn scaleAt(self: *Self, mouse_x: isize, mouse_y: isize, new_scale_factor: u8) void {
+        const old_scale = self.getIntScale();
+        self.scale_factor = new_scale_factor;
+        const new_scale = self.getIntScale();
+        self.pixel_offset_x = @divFloor((self.pixel_offset_x - mouse_x) * new_scale, old_scale) + mouse_x;
+        self.pixel_offset_y = @divFloor((self.pixel_offset_y - mouse_y) * new_scale, old_scale) + mouse_y;
     }
 
     pub fn screenToFieldsCoords(self: Self, screen_x: usize, screen_y: usize) Pair {
@@ -34,13 +37,13 @@ pub const DisplayParams = struct {
         };
     }
 
-    pub inline fn getIntScale(self: Self) u8 {
-        return @intFromFloat(self.scale);
+    pub inline fn getIntScale(self: Self) u32 {
+        return std.math.pow(u32, SCALING_BASE, self.scale_factor);
     }
 };
 
 fn displayBlock(block: *const Block(u32), params: DisplayParams, screen_x: i32, screen_y: i32) void {
-    const scale: u8 = params.getIntScale();
+    const scale: i32 = @intCast(params.getIntScale());
 
     var y: i32 = 0;
     for (block.rows) |row| {
@@ -86,7 +89,7 @@ fn displayBlock(block: *const Block(u32), params: DisplayParams, screen_x: i32, 
 }
 
 pub fn displayField(field: Field, params: DisplayParams) void {
-    const block_pixel_size: u32 = @as(u32, Field.get_block_size()) * @as(u32, @intFromFloat(params.scale));
+    const block_pixel_size: u32 = @as(u32, Field.get_block_size()) * params.getIntScale();
 
     var block_iterator = field.blocks.iterator();
     while (block_iterator.next()) |entry| {
