@@ -59,7 +59,7 @@ const App = struct {
             @intCast(self.display_params.height),
             "Game of Life",
         );
-        rl.setExitKey(rl.KeyboardKey.q);
+        rl.setExitKey(.q);
         rl.setTargetFPS(60);
     }
 
@@ -179,7 +179,7 @@ const App = struct {
             // Recalculate offset during the panning
             self.display_params.pixel_offset_x = panning_params.offsetX(mouse.x);
             self.display_params.pixel_offset_y = panning_params.offsetY(mouse.y);
-        } else if (rl.isMouseButtonDown(rl.MouseButton.middle)) {
+        } else if (rl.isMouseButtonDown(.middle)) {
             // Start view panning on middle mouse button press
             self.panning_params = .{
                 .initial_mouse_x = mouse.x,
