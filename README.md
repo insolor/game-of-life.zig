@@ -18,7 +18,8 @@ Plans:
 - [x] GUI (raylib)
 - [x] Mouse and keyboard control
 - Optimizations:
-  - Parallelization?
+  - [ ] Parallelization with threading
+  - Don't recalculate dead (or short looped?) blocks?
   - Reuse memory instead of destroying and creating of fields?
 - Some cool stuff:
   - Fish-eye view?
