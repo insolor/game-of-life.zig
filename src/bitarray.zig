@@ -155,8 +155,7 @@ test "BitIterator" {
 
     var index: usize = 0;
     var iterator2 = bitarray.iterator();
-    while (iterator2.next()) |value| {
+    while (iterator2.next()) |value| : (index += 1) {
         try testing.expectEqual(try bitarray.get(index), value);
-        index += 1;
     }
 }

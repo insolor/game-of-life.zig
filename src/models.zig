@@ -192,12 +192,10 @@ pub const Field = struct {
         var row_iterator = std.mem.splitScalar(u8, obj, '\n');
         var i: isize = 0;
         while (row_iterator.next()) |row| : (i += 1) {
-            var j: isize = 0;
-            for (row) |char| {
+            for (row, 0..) |char, j| {
                 if (char != ' ') {
-                    try self.setOn(x + @as(isize, j), y + i);
+                    try self.setOn(x + @as(isize, @intCast(j)), y + i);
                 }
-                j += 1;
             }
         }
     }
