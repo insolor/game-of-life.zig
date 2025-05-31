@@ -2,7 +2,6 @@ const rl = @import("raylib");
 const std = @import("std");
 
 const models = @import("models.zig");
-const Pair = models.Pair;
 const Block = models.Block;
 const Field = models.Field;
 

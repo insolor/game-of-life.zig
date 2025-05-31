@@ -129,7 +129,7 @@ const App = struct {
             return;
         }
 
-        if (rl.isKeyPressed(.f12)) {
+        if (rl.isKeyPressed(.f11)) {
             self.field.clear();
             return;
         }
