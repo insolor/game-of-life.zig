@@ -38,11 +38,11 @@ pub const DisplayParams = struct {
         );
     }
 
-    pub fn screenToFieldsCoords(self: Self, screen_x: usize, screen_y: usize) Pair {
+    pub fn screenToFieldsCoords(self: Self, screen_x: usize, screen_y: usize) struct { x: isize, y: isize } {
         const scale = self.getIntScale();
         return .{
-            (screen_x - self.pixel_offset_x) / scale,
-            (screen_y - self.pixel_offset_y) / scale,
+            .x = @divFloor((@as(isize, @intCast(screen_x)) - self.pixel_offset_x), scale),
+            .y = @divFloor((@as(isize, @intCast(screen_y)) - self.pixel_offset_y), scale),
         };
     }
 

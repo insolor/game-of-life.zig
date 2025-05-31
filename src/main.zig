@@ -124,43 +124,66 @@ const App = struct {
         }
     }
 
+    fn editField(self: *Self) !void {
+        if (self.is_running) {
+            return;
+        }
+
+        if (rl.isKeyPressed(.f12)) {
+            self.field.clear();
+            return;
+        }
+
+        const mouse = Self.getMousePosition();
+        const field_coords = self.display_params.screenToFieldsCoords(
+            @intCast(mouse.x),
+            @intCast(mouse.y),
+        );
+
+        if (rl.isMouseButtonPressed(.left)) {
+            try self.field.setOn(field_coords.x, field_coords.y);
+        } else if (rl.isMouseButtonPressed(.right)) {
+            try self.field.setOff(field_coords.x, field_coords.y);
+        }
+    }
+
     fn scaling(self: *Self) void {
         const mouse_wheel: isize = @intFromFloat(rl.getMouseWheelMove());
         if (mouse_wheel != 0) {
-            const mouse_position = Self.getMousePosition();
+            const mouse = Self.getMousePosition();
             self.display_params.zoomAt(
-                mouse_position.x,
-                mouse_position.y,
+                mouse.x,
+                mouse.y,
                 mouse_wheel,
             );
         }
     }
 
     fn getMousePosition() struct { x: isize, y: isize } {
-        const mouse_position = rl.getMousePosition();
+        const mouse = rl.getMousePosition();
         return .{
-            .x = @intFromFloat(mouse_position.x),
-            .y = @intFromFloat(mouse_position.y),
+            .x = @intFromFloat(mouse.x),
+            .y = @intFromFloat(mouse.y),
         };
     }
 
     fn panning(self: *Self) void {
         // Finish view panning on middle mouse button release
-        if (rl.isMouseButtonUp(rl.MouseButton.middle)) {
+        if (rl.isMouseButtonUp(.middle)) {
             self.panning_params = null;
             return;
         }
 
-        const mouse_position = Self.getMousePosition();
+        const mouse = Self.getMousePosition();
         if (self.panning_params) |panning_params| {
             // Recalculate offset during the panning
-            self.display_params.pixel_offset_x = panning_params.offsetX(mouse_position.x);
-            self.display_params.pixel_offset_y = panning_params.offsetY(mouse_position.y);
+            self.display_params.pixel_offset_x = panning_params.offsetX(mouse.x);
+            self.display_params.pixel_offset_y = panning_params.offsetY(mouse.y);
         } else if (rl.isMouseButtonDown(rl.MouseButton.middle)) {
             // Start view panning on middle mouse button press
             self.panning_params = .{
-                .initial_mouse_x = mouse_position.x,
-                .initial_mouse_y = mouse_position.y,
+                .initial_mouse_x = mouse.x,
+                .initial_mouse_y = mouse.y,
                 .initial_offset_x = self.display_params.pixel_offset_x,
                 .initial_offset_y = self.display_params.pixel_offset_y,
             };
@@ -175,6 +198,7 @@ const App = struct {
             self.keyboardControls();
             self.panning();
             self.scaling();
+            try self.editField();
             self.draw();
             if ((self.is_running or self.step) and frame_count % self.frame_skip == 0) {
                 try self.nextFieldState();

@@ -49,6 +49,11 @@ pub fn Block(comptime T: type) type {
             try self.rows[y].setOn(x);
         }
 
+        /// Set the cell's value to 0
+        fn setOff(self: *Self, x: usize, y: usize) !void {
+            try self.rows[y].setOff(x);
+        }
+
         /// Get the value of a cell in the block
         fn get(self: Self, x: usize, y: usize) !u1 {
             return try self.rows[y].get(x);
@@ -161,6 +166,17 @@ pub const Field = struct {
         try block.?.setOn(coords.local_x, coords.local_y);
     }
 
+    /// Set the cell's value to 0
+    pub fn setOff(self: *Self, x: isize, y: isize) !void {
+        const coords = convertToBlockCoords(x, y);
+        var block: ?*BlockType = self.blocks.get(.{ coords.block_x, coords.block_y });
+        if (block == null) {
+            return;
+        }
+
+        try block.?.setOff(coords.local_x, coords.local_y);
+    }
+
     /// Get the value of a cell with the given coordinates
     pub fn get(self: Self, x: isize, y: isize) !u1 {
         const coords = convertToBlockCoords(x, y);
@@ -170,8 +186,9 @@ pub const Field = struct {
 
     /// Clear the field
     pub fn clear(self: *Self) void {
-        for (self.blocks.valueIterator()) |block| {
-            block.deinit();
+        var iterator = self.blocks.valueIterator();
+        while (iterator.next()) |block| {
+            block.*.deinit();
         }
         self.blocks.clearRetainingCapacity();
     }
