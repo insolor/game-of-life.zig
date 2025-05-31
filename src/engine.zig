@@ -1,11 +1,10 @@
 const std = @import("std");
 const testing = std.testing;
-const models = @import("models.zig");
 const object_library = @import("object_library.zig");
+const Field = @import("Field.zig");
 
 const AutoHashMap = std.AutoHashMap;
-const Field = models.Field;
-const Pair = models.Pair;
+pub const Pair = struct { isize, isize };
 
 /// Calculate next state of a single cell of the field based on count of the cell's neighbours
 fn calculateCellNextState(field: Field, x: isize, y: isize) !u1 {

@@ -1,9 +1,8 @@
 const rl = @import("raylib");
 const std = @import("std");
 
-const models = @import("models.zig");
-const Block = models.Block;
-const Field = models.Field;
+const Block = @import("block.zig").Block;
+const Field = @import("Field.zig");
 
 const DRAW_COLOR = rl.Color.white;
 

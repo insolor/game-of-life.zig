@@ -2,8 +2,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const display = @import("display.zig");
-const models = @import("models.zig");
-const Field = models.Field;
+const Field = @import("Field.zig");
 const engine = @import("engine.zig");
 
 /// A set of parameters needed to control view panning with the middle mouse button
