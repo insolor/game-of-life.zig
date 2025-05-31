@@ -55,14 +55,12 @@ pub const DisplayParams = struct {
 fn displayBlock(block: Block(u32), params: DisplayParams, screen_x: i32, screen_y: i32) void {
     const scale: i32 = @intCast(params.getIntScale());
 
-    var y: i32 = 0;
-    for (block.rows) |row| {
-        defer y += 1;
+    for (block.rows, 0..) |row, y| {
         if (row.isEmpty()) {
             continue;
         }
 
-        const cell_screen_y: i32 = screen_y + y * scale;
+        const cell_screen_y: i32 = screen_y + @as(i32, @intCast(y)) * scale;
         if (!(cell_screen_y + scale >= 0 and cell_screen_y < params.height)) {
             continue;
         }
