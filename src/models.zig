@@ -39,11 +39,6 @@ pub fn Block(comptime T: type) type {
             }
         }
 
-        /// Set the value of a cell in the block
-        fn set(self: *Self, x: usize, y: usize, value: u1) !void {
-            try self.rows[y].set(x, value);
-        }
-
         /// Set the cell's value to 1
         fn setOn(self: *Self, x: usize, y: usize) !void {
             try self.rows[y].setOn(x);
@@ -138,22 +133,6 @@ pub const Field = struct {
         };
     }
 
-    /// Set a value to a cell with the given coordinates
-    pub fn set(self: *Self, x: isize, y: isize, value: u1) !void {
-        const coords = convertToBlockCoords(x, y);
-        var block: ?*BlockType = self.blocks.get(.{ coords.block_x, coords.block_y });
-        if (block == null) {
-            if (value == 0) {
-                return;
-            }
-
-            block = try BlockType.init(self.allocator);
-            try self.blocks.put(.{ coords.block_x, coords.block_y }, block.?);
-        }
-
-        try block.?.set(coords.local_x, coords.local_y, value);
-    }
-
     /// Set the cell's value to 1
     pub fn setOn(self: *Self, x: isize, y: isize) !void {
         const coords = convertToBlockCoords(x, y);
@@ -233,11 +212,11 @@ test "Block" {
     block.clear();
     try testing.expect(block.isEmpty());
 
-    try block.set(0, 0, 1);
+    try block.setOn(0, 0);
     try testing.expectEqual(1, try block.get(0, 0));
     try testing.expect(!block.isEmpty());
 
-    try block.set(0, 0, 0);
+    try block.setOff(0, 0);
     try testing.expectEqual(0, try block.get(0, 0));
     try testing.expect(block.isEmpty());
 }
@@ -268,15 +247,15 @@ test "Field" {
     var field = Field.init(testing.allocator);
     defer field.deinit();
 
-    try field.set(0, 0, 1);
+    try field.setOn(0, 0);
     try testing.expectEqual(1, try field.get(0, 0));
 
-    try field.set(0, 0, 0);
+    try field.setOff(0, 0);
     try testing.expectEqual(0, try field.get(0, 0));
 
     const block: *Block(u32) = field.blocks.get(.{ 0, 0 }) orelse unreachable;
     try testing.expect(block.isEmpty());
 
-    try field.set(-1, -1, 1);
+    try field.setOn(-1, -1);
     try testing.expectEqual(1, try field.get(-1, -1));
 }

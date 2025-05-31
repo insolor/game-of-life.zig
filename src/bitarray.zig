@@ -91,19 +91,6 @@ pub fn BitArray(comptime T: type) type {
             return if (self.bits & BIT_MASKS[index] != 0) 1 else 0;
         }
 
-        /// Set the value of the bit at the given index (index counts from the least significant bit)
-        pub fn set(self: *Self, index: usize, value: u1) !void {
-            if (index >= BIT_SIZE) {
-                return error.IndexOutOfBounds;
-            }
-
-            if (value == 0) {
-                self.bits &= INVERTED_MASKS[index];
-            } else {
-                self.bits |= BIT_MASKS[index];
-            }
-        }
-
         /// Set the value of the bit at the given index to 1
         pub fn setOn(self: *Self, index: usize) !void {
             if (index >= BIT_SIZE) {
@@ -146,14 +133,14 @@ test "BitArray" {
     var bitarray = BitArray32{};
     try testing.expectEqual(0, bitarray.bits);
 
-    try bitarray.set(0, 1);
+    try bitarray.setOn(0);
     try testing.expectEqual(1, try bitarray.get(0));
 
-    try bitarray.set(31, 1);
+    try bitarray.setOn(31);
     try testing.expectEqual(1, try bitarray.get(31));
     try testing.expectEqual(0b10000000000000000000000000000001, bitarray.bits);
 
-    try bitarray.set(0, 0);
+    try bitarray.setOff(0);
     try testing.expectEqual(0, try bitarray.get(0));
     try testing.expectEqual(0b10000000000000000000000000000000, bitarray.bits);
 }

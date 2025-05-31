@@ -100,11 +100,11 @@ test "Calculate next field state (glider)" {
     // 010
 
     // After clearing cells that are expected to be 1 the field should be empty:
-    try result.set(0, 1, 0);
-    try result.set(2, 1, 0);
-    try result.set(1, 2, 0);
-    try result.set(2, 2, 0);
-    try result.set(1, 3, 0);
+    try result.setOff(0, 1);
+    try result.setOff(2, 1);
+    try result.setOff(1, 2);
+    try result.setOff(2, 2);
+    try result.setOff(1, 3);
 
     try testing.expect(result.isEmpty());
 }
@@ -130,8 +130,8 @@ test "Calculate next field state (blinker)" {
 
     try testing.expectEqual(2, result.blocks.count());
 
-    try result.set(1, -1, 0);
-    try result.set(1, 0, 0);
-    try result.set(1, 1, 0);
+    try result.setOff(1, -1);
+    try result.setOff(1, 0);
+    try result.setOff(1, 1);
     try testing.expect(result.isEmpty());
 }
