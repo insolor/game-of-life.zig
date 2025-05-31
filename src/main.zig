@@ -208,7 +208,7 @@ const App = struct {
     }
 };
 
-pub fn main() anyerror!void {
+pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
     var app = App.init(allocator, 800, 600);
