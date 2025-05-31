@@ -131,7 +131,7 @@ fn editField(self: *Self) !void {
         return;
     }
 
-    const mouse = Self.getMousePosition();
+    const mouse = getMousePosition();
     const field_coords = self.display_params.screenToFieldsCoords(
         @intCast(mouse.x),
         @intCast(mouse.y),
@@ -147,7 +147,7 @@ fn editField(self: *Self) !void {
 fn scaling(self: *Self) void {
     const mouse_wheel: isize = @intFromFloat(rl.getMouseWheelMove());
     if (mouse_wheel != 0) {
-        const mouse = Self.getMousePosition();
+        const mouse = getMousePosition();
         self.display_params.zoomAt(
             mouse.x,
             mouse.y,
@@ -171,7 +171,7 @@ fn panning(self: *Self) void {
         return;
     }
 
-    const mouse = Self.getMousePosition();
+    const mouse = getMousePosition();
     if (self.panning_params) |panning_params| {
         // Recalculate offset during the panning
         self.display_params.pixel_offset_x = panning_params.offsetX(mouse.x);

@@ -128,7 +128,7 @@ pub fn putObject(self: *Self, obj: []const u8, x: isize, y: isize) !void {
 }
 
 test "Field" {
-    var field = Self.init(testing.allocator);
+    var field = init(testing.allocator);
     defer field.deinit();
 
     try field.setOn(0, 0);
@@ -147,21 +147,21 @@ test "Field" {
 test "convert_to_block_coords" {
     try expectEqualStructs(
         .{ .block_x = 0, .block_y = 0, .local_x = 0, .local_y = 0 },
-        Self.convertToBlockCoords(0, 0),
+        convertToBlockCoords(0, 0),
     );
 
     try expectEqualStructs(
         .{ .block_x = 0, .block_y = -1, .local_x = 0, .local_y = 31 },
-        Self.convertToBlockCoords(0, -1),
+        convertToBlockCoords(0, -1),
     );
 
     try expectEqualStructs(
         .{ .block_x = -1, .block_y = 0, .local_x = 31, .local_y = 0 },
-        Self.convertToBlockCoords(-1, 0),
+        convertToBlockCoords(-1, 0),
     );
 
     try expectEqualStructs(
         .{ .block_x = -1, .block_y = -1, .local_x = 31, .local_y = 31 },
-        Self.convertToBlockCoords(-1, -1),
+        convertToBlockCoords(-1, -1),
     );
 }
