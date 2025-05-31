@@ -16,7 +16,7 @@ Plans:
 - [x] Infinite field
 - [x] Engine (calculate next field state)
 - [x] GUI (raylib)
-- [ ] Mouse and keyboard control
+- [x] Mouse and keyboard control
 - Optimizations:
   - Parallelization?
   - Reuse memory instead of destroying and creating of fields?
