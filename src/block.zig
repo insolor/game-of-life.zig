@@ -1,9 +1,6 @@
 const std = @import("std");
 const bitarray = @import("bitarray.zig");
-const testing_utils = @import("testing_utils.zig");
 const testing = std.testing;
-const AutoHashMap = std.AutoHashMap;
-const expectEqualStructs = testing_utils.expectEqualStructs;
 
 const BitArray = bitarray.BitArray;
 
