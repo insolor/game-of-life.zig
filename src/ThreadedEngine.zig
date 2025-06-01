@@ -34,9 +34,9 @@ fn calculateBlockNextState(allocator: std.mem.Allocator, block_coords: struct { 
     const field_y = block_y * Field.get_block_size();
 
     var x: usize = 0;
-    while (x <= Field.get_block_size()) : (x += 1) {
+    while (x < Field.get_block_size()) : (x += 1) {
         var y: usize = @intCast(field_y);
-        while (y <= Field.get_block_size()) : (y += 1) {
+        while (y < Field.get_block_size()) : (y += 1) {
             const new_cell_state = try Engine.calculateCellNextState(
                 field,
                 field_x + @as(isize, @intCast(x)),
