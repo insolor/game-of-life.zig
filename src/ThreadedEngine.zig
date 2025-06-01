@@ -2,6 +2,7 @@ const std = @import("std");
 const testing = std.testing;
 const object_library = @import("object_library.zig");
 const Field = @import("Field.zig");
+const Engine = @import("Engine.zig");
 
 const AutoHashMap = std.AutoHashMap;
 const Pair = struct { isize, isize };
@@ -22,28 +23,6 @@ pub fn init(allocator: std.mem.Allocator) Self {
 /// Deinitialize engine object
 pub fn deinit(self: *Self) void {
     self.field.deinit();
-}
-
-/// Calculate next state of a single cell of the field based on count of the cell's neighbours
-pub fn calculateCellNextState(field: Field, x: isize, y: isize) !u1 {
-    const current_state = try field.get(x, y);
-    var sum: u8 = 0;
-
-    var i = x - 1;
-    while (i <= x + 1) : (i += 1) {
-        var j = y - 1;
-        while (j <= y + 1) : (j += 1) {
-            sum += try field.get(i, j);
-        }
-    }
-
-    sum -= current_state;
-
-    if (current_state == 1) {
-        return if (sum == 2 or sum == 3) 1 else 0;
-    } else {
-        return if (sum == 3) 1 else 0;
-    }
 }
 
 /// Calculate next state of the entire field
@@ -68,7 +47,7 @@ fn calculateFieldNextState(field: Field) !Field {
                     continue;
                 }
 
-                const new_cell_state = try calculateCellNextState(field, x, y);
+                const new_cell_state = try Engine.calculateCellNextState(field, x, y);
                 if (new_cell_state == 1) {
                     try result.setOn(x, y);
                 }
@@ -84,22 +63,6 @@ pub fn nextFieldState(self: *Self) !void {
     const next_state = try calculateFieldNextState(self.field);
     self.field.deinit();
     self.field = next_state;
-}
-
-test "Calculate next cell state" {
-    var field = Field.init(testing.allocator);
-    defer field.deinit();
-
-    try field.setOn(0, 0);
-    try testing.expectEqual(0, try calculateCellNextState(field, 0, 0));
-
-    // 10
-    // 11
-
-    try field.setOn(0, 1);
-    try field.setOn(1, 1);
-    try testing.expectEqual(1, try calculateCellNextState(field, 0, 0));
-    try testing.expectEqual(1, try calculateCellNextState(field, 1, 0));
 }
 
 test "Calculate next field state (glider)" {
