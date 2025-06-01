@@ -12,7 +12,7 @@ const Pair = struct { isize, isize };
 const BLOCK_ROW_TYPE = u32;
 const BLOCK_SIZE = @bitSizeOf(BLOCK_ROW_TYPE);
 
-const BlockType = Block(BLOCK_ROW_TYPE);
+pub const BlockType = Block(BLOCK_ROW_TYPE);
 
 /// A hasmap representing a sparse 2D array of blocks
 blocks: AutoHashMap(Pair, *BlockType),
