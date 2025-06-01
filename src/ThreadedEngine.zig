@@ -27,17 +27,21 @@ pub fn deinit(self: *Self) void {
 }
 
 /// Calculate next state of one block
-fn calculateBlockNextState(allocator: std.mem.Allocator, block_coords: struct { isize, isize }, field: Field) !?Block {
+fn calculateBlockNextState(allocator: std.mem.Allocator, block_coords: struct { isize, isize }, field: Field) !?*Block {
     var new_block = try Block.init(allocator);
-    const block_x, const block_y = block_coords.*;
+    const block_x, const block_y = block_coords;
     const field_x = block_x * Field.get_block_size();
     const field_y = block_y * Field.get_block_size();
 
-    var x = 0;
-    while (x <= Field.get_block_size() + 1) : (x += 1) {
-        var y = field_y - 1;
-        while (y <= Field.get_block_size() + 1) : (y += 1) {
-            const new_cell_state = try Engine.calculateCellNextState(field, field_x + x, field_y + y);
+    var x: usize = 0;
+    while (x <= Field.get_block_size()) : (x += 1) {
+        var y: usize = @intCast(field_y);
+        while (y <= Field.get_block_size()) : (y += 1) {
+            const new_cell_state = try Engine.calculateCellNextState(
+                field,
+                field_x + @as(isize, @intCast(x)),
+                field_y + @as(isize, @intCast(y)),
+            );
             if (new_cell_state == 1) {
                 try new_block.setOn(x, y);
             }
@@ -62,9 +66,9 @@ fn calculateFieldNextState(field: Field) !Field {
     var block_coords_iterator = field.blocks.keyIterator();
 
     while (block_coords_iterator.next()) |block_coords| {
-        const optional_block = try calculateBlockNextState(field.allocator, block_coords, field);
+        const optional_block = try calculateBlockNextState(field.allocator, block_coords.*, field);
         if (optional_block) |block| {
-            result.blocks[block_coords] = block;
+            try result.blocks.put(block_coords.*, block);
         }
         // TODO: calculate outer edge cells
     }
