@@ -2,6 +2,7 @@ const std = @import("std");
 const testing = std.testing;
 const object_library = @import("object_library.zig");
 const Field = @import("Field.zig");
+const Block = Field.BlockType;
 const Engine = @import("Engine.zig");
 
 const AutoHashMap = std.AutoHashMap;
@@ -25,6 +26,32 @@ pub fn deinit(self: *Self) void {
     self.field.deinit();
 }
 
+/// Calculate next state of one block
+fn calculateBlockNextState(allocator: std.mem.Allocator, block_coords: struct { isize, isize }, field: Field) !?Block {
+    var new_block = try Block.init(allocator);
+    const block_x, const block_y = block_coords.*;
+    const field_x = block_x * Field.get_block_size();
+    const field_y = block_y * Field.get_block_size();
+
+    var x = 0;
+    while (x <= Field.get_block_size() + 1) : (x += 1) {
+        var y = field_y - 1;
+        while (y <= Field.get_block_size() + 1) : (y += 1) {
+            const new_cell_state = try Engine.calculateCellNextState(field, field_x + x, field_y + y);
+            if (new_cell_state == 1) {
+                try new_block.setOn(x, y);
+            }
+        }
+    }
+
+    if (new_block.isEmpty()) {
+        new_block.deinit();
+        return null;
+    }
+
+    return new_block;
+}
+
 /// Calculate next state of the entire field
 fn calculateFieldNextState(field: Field) !Field {
     var result = Field.init(field.allocator);
@@ -35,25 +62,11 @@ fn calculateFieldNextState(field: Field) !Field {
     var block_coords_iterator = field.blocks.keyIterator();
 
     while (block_coords_iterator.next()) |block_coords| {
-        const block_x, const block_y = block_coords.*;
-        const field_x = block_x * Field.get_block_size();
-        const field_y = block_y * Field.get_block_size();
-
-        var x = field_x - 1;
-        while (x <= field_x + Field.get_block_size() + 1) : (x += 1) {
-            var y = field_y - 1;
-            while (y <= field_y + Field.get_block_size() + 1) : (y += 1) {
-                if (calculated_cells.contains(.{ x, y })) {
-                    continue;
-                }
-
-                const new_cell_state = try Engine.calculateCellNextState(field, x, y);
-                if (new_cell_state == 1) {
-                    try result.setOn(x, y);
-                }
-                try calculated_cells.put(.{ x, y }, {});
-            }
+        const optional_block = try calculateBlockNextState(field.allocator, block_coords, field);
+        if (optional_block) |block| {
+            result.blocks[block_coords] = block;
         }
+        // TODO: calculate outer edge cells
     }
 
     return result;
