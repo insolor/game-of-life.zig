@@ -1,9 +1,9 @@
 const bitarray = @import("bitarray.zig");
 const block = @import("block.zig");
-const engine = @import("engine.zig");
+const Engine = @import("Engine.zig");
 
 test {
     _ = bitarray;
     _ = block;
-    _ = engine;
+    _ = Engine;
 }

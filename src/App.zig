@@ -2,8 +2,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const display = @import("display.zig");
-const Field = @import("Field.zig");
-const engine = @import("engine.zig");
+const Engine = @import("Engine.zig");
 
 /// A set of parameters needed to control view panning with the middle mouse button
 const PanningParams = struct {
@@ -22,7 +21,7 @@ const PanningParams = struct {
 };
 
 allocator: std.mem.Allocator,
-field: Field,
+engine: Engine,
 display_params: display.DisplayParams,
 panning_params: ?PanningParams = null,
 
@@ -37,7 +36,7 @@ const Self = @This();
 pub fn init(allocator: std.mem.Allocator, screen_width: usize, screen_height: usize) Self {
     return .{
         .allocator = allocator,
-        .field = Field.init(allocator),
+        .engine = Engine.init(allocator),
         .display_params = .{
             .width = screen_width,
             .height = screen_height,
@@ -47,7 +46,7 @@ pub fn init(allocator: std.mem.Allocator, screen_width: usize, screen_height: us
 
 pub fn deinit(self: *Self) void {
     rl.closeWindow();
-    self.field.deinit();
+    self.engine.deinit();
 }
 
 fn initDisplay(self: Self) void {
@@ -65,13 +64,7 @@ fn draw(self: Self) void {
     defer rl.endDrawing();
 
     rl.clearBackground(rl.Color.black);
-    display.displayField(self.field, self.display_params);
-}
-
-fn nextFieldState(self: *Self) !void {
-    const next_state = try engine.calculateFieldNextState(self.field);
-    self.field.deinit();
-    self.field = next_state;
+    display.displayField(self.engine.field, self.display_params);
 }
 
 fn keyboardControls(self: *Self) void {
@@ -127,7 +120,7 @@ fn editField(self: *Self) !void {
     }
 
     if (rl.isKeyPressed(.f11)) {
-        self.field.clear();
+        self.engine.field.clear();
         return;
     }
 
@@ -138,9 +131,9 @@ fn editField(self: *Self) !void {
     );
 
     if (rl.isMouseButtonPressed(.left)) {
-        try self.field.setOn(field_coords.x, field_coords.y);
+        try self.engine.field.setOn(field_coords.x, field_coords.y);
     } else if (rl.isMouseButtonPressed(.right)) {
-        try self.field.setOff(field_coords.x, field_coords.y);
+        try self.engine.field.setOff(field_coords.x, field_coords.y);
     }
 }
 
@@ -198,7 +191,7 @@ pub fn run(self: *Self) !void {
         try self.editField();
         self.draw();
         if ((self.is_running or self.step) and frame_count % self.frame_skip == 0) {
-            try self.nextFieldState();
+            try self.engine.nextFieldState();
             self.step = false;
         }
     }

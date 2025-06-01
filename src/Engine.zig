@@ -4,7 +4,25 @@ const object_library = @import("object_library.zig");
 const Field = @import("Field.zig");
 
 const AutoHashMap = std.AutoHashMap;
-pub const Pair = struct { isize, isize };
+const Pair = struct { isize, isize };
+
+allocator: std.mem.Allocator,
+field: Field,
+
+const Self = @This();
+
+/// Initialize engine object
+pub fn init(allocator: std.mem.Allocator) Self {
+    return .{
+        .allocator = allocator,
+        .field = Field.init(allocator),
+    };
+}
+
+/// Deinitialize engine object
+pub fn deinit(self: *Self) void {
+    self.field.deinit();
+}
 
 /// Calculate next state of a single cell of the field based on count of the cell's neighbours
 fn calculateCellNextState(field: Field, x: isize, y: isize) !u1 {
@@ -29,7 +47,7 @@ fn calculateCellNextState(field: Field, x: isize, y: isize) !u1 {
 }
 
 /// Calculate next state of the entire field
-pub fn calculateFieldNextState(field: Field) !Field {
+fn calculateFieldNextState(field: Field) !Field {
     var result = Field.init(field.allocator);
 
     var calculated_cells = AutoHashMap(Pair, void).init(field.allocator);
@@ -60,6 +78,12 @@ pub fn calculateFieldNextState(field: Field) !Field {
     }
 
     return result;
+}
+
+pub fn nextFieldState(self: *Self) !void {
+    const next_state = try calculateFieldNextState(self.field);
+    self.field.deinit();
+    self.field = next_state;
 }
 
 test "Calculate next cell state" {
