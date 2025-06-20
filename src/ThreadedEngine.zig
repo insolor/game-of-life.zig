@@ -65,10 +65,15 @@ fn calculateFieldNextState(field: Field) !Field {
 
     var block_coords_iterator = field.blocks.keyIterator();
 
-    while (block_coords_iterator.next()) |block_coords| {
-        const optional_block = try calculateBlockNextState(field.allocator, block_coords.*, field);
+    while (block_coords_iterator.next()) |coords| {
+        const optional_block = try calculateBlockNextState(
+            field.allocator,
+            coords.*,
+            field,
+        );
+
         if (optional_block) |block| {
-            try result.blocks.put(block_coords.*, block);
+            try result.blocks.put(coords.*, block);
         }
         // TODO: calculate outer edge cells
     }
