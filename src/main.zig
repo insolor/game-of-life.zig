@@ -2,9 +2,8 @@ const std = @import("std");
 const App = @import("App.zig");
 const object_library = @import("object_library.zig");
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
     var app = App.init(allocator, 800, 600);
     defer app.deinit();
 
