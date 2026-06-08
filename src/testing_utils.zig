@@ -1,5 +1,4 @@
 const std = @import("std");
-const builtin = std.builtin;
 const testing = std.testing;
 
 /// Asserts that all fields of the structs are equal
