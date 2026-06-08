@@ -13,8 +13,8 @@ on:
       - '**.zig'
       - '.github/workflows/zig-build-test.yml'
 
-  schedule:
-    - cron: "0 0 * * Sat"
+  # schedule:
+  #   - cron: "0 0 * * Sat"
 
 jobs:
   test:
