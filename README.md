@@ -14,6 +14,8 @@ Plans:
 - [x] Engine (calculate next field state)
 - [x] GUI (raylib)
 - [x] Mouse and keyboard control
+- [ ] Show grid, including block boundaries
+- [ ] Show help on controls
 - Optimizations:
   - [ ] Parallelization with threading
   - Don't recalculate dead (or short looped?) blocks?
