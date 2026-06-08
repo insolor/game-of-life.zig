@@ -4,11 +4,21 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const exe = b.addExecutable(.{
-        .name = "game-of-life",
+    const main_module = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
+    });
+
+    const test_module = b.createModule(.{
+        .root_source_file = b.path("src/tests.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+
+    const exe = b.addExecutable(.{
+        .name = "game-of-life",
+        .root_module = main_module,
     });
 
     var noraylib: bool = false;
@@ -28,7 +38,7 @@ pub fn build(b: *std.Build) void {
         const raygui = raylib_dep.module("raygui"); // raygui module
         const raylib_artifact = raylib_dep.artifact("raylib"); // raylib C library
 
-        exe.linkLibrary(raylib_artifact);
+        exe.root_module.linkLibrary(raylib_artifact);
         exe.root_module.addImport("raylib", raylib);
         exe.root_module.addImport("raygui", raygui);
     }
@@ -47,9 +57,7 @@ pub fn build(b: *std.Build) void {
     run_step.dependOn(&run_cmd.step);
 
     const unit_tests = b.addTest(.{
-        .root_source_file = b.path("src/tests.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = test_module,
         .test_runner = .{ .path = b.path("test_runner.zig"), .mode = .simple },
     });
 

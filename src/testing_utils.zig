@@ -1,14 +1,9 @@
 const std = @import("std");
-const builtin = std.builtin;
 const testing = std.testing;
-
-fn getStructFields(comptime T: type) []const builtin.Type.StructField {
-    return @typeInfo(T).@"struct".fields;
-}
 
 /// Asserts that all fields of the structs are equal
 pub fn expectEqualStructs(expected: anytype, actual: anytype) !void {
-    inline for (getStructFields(@TypeOf(expected))) |field| {
+    inline for (@typeInfo(@TypeOf(expected)).@"struct".fields) |field| {
         try testing.expectEqual(
             @field(expected, field.name),
             @field(actual, field.name),
