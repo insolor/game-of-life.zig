@@ -96,7 +96,7 @@ fn displayBlock(block: Block(u32), params: DisplayParams, screen_x: i32, screen_
 
 /// Display a visible part of the field
 pub fn displayField(field: Field, params: DisplayParams) void {
-    const block_pixel_size: u32 = @as(u32, Field.get_block_size()) * params.getIntScale();
+    const block_pixel_size: u32 = Field.get_block_size() * params.getIntScale();
 
     var block_iterator = field.blocks.iterator();
     while (block_iterator.next()) |entry| {
