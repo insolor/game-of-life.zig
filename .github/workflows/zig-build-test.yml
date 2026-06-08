@@ -2,13 +2,15 @@ name: zig build test
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
     paths:
       - '**.zig'
       - '.github/workflows/zig-build-test.yml'
 
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
     paths:
       - '**.zig'
       - '.github/workflows/zig-build-test.yml'
